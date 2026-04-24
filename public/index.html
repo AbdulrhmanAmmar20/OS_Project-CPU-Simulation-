@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OS-Quest — AI-Driven Scheduling Arena</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ══════════════════════  HEADER  ════════════════════════════════ -->
+  <header class="app-header">
+    <div class="logo">
+      <div>
+        <span class="logo-text">OS-Quest</span>
+        <span class="logo-sub">AI-Driven Scheduling Arena</span>
+      </div>
+    </div>
+    <div class="header-badges"> 
+      <span class="badge badge-c">C Event Engine</span>
+      <span class="badge badge-ai">AI-SJF Predictor</span>
+      <span class="badge badge-events">Multi-Burst I/O</span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════  MAIN  ══════════════════════════════════ -->
+  <main class="main-content">
+
+    <!-- Hero strip -->
+    <div class="hero-strip">
+      <div>
+        <div class="hero-title">Interactive OS Scheduler Simulator</div>
+        <div class="hero-desc">
+          Simulate real OS scheduling with a formal event-driven engine.
+          Every process cycles through <strong>Ready → Running → Waiting (I/O) → Done</strong>.
+          The AI uses <em>Exponential Smoothing</em> to predict burst lengths — just like a real kernel.
+        </div>
+        <div class="hero-chips">
+          <span class="chip">FCFS</span>
+          <span class="chip">SJF (AI Predicted)</span>
+          <span class="chip">SRTF</span>
+          <span class="chip">Round Robin</span>
+          <span class="chip">Priority</span>
+          <span class="chip">Multi-burst I/O</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode Tabs -->
+    <div class="mode-tabs">
+      <button id="tab-classic"  class="tab-btn active" onclick="switchMode('classic')">Classic Simulator</button>
+      <button id="tab-duel"     class="tab-btn"        onclick="switchMode('duel')">Scheduling Duel</button>
+      <button id="tab-survival" class="tab-btn"        onclick="switchMode('survival')">System Survival</button>
+    </div>
+
+    <!-- ════════════════  CLASSIC MODE  ═══════════════════════════════ -->
+    <div id="panel-classic">
+
+      <!-- Process Builder -->
+      <div class="card glow-hover">
+        <div class="card-header">
+          <div class="card-title">Define Processes</div>
+          <div class="btn-group">
+            <button class="btn-secondary btn-sm" onclick="addRandomProcess()">Random</button>
+            <button class="btn-secondary btn-sm" onclick="loadDemoProcesses()">Load Demo</button>
+            <button class="btn-danger    btn-sm" onclick="clearProcesses()">Clear All</button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Arrival Time (ms)</label>
+            <input type="number" id="inp-arrival" value="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">CPU Bursts (ms, comma-separated)</label>
+            <input type="text" id="inp-cpu-bursts" value="6, 3" placeholder="e.g. 6, 3" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">I/O Bursts between CPUs (ms)</label>
+            <input type="text" id="inp-io-bursts" value="4" placeholder="e.g. 4" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priority (lower = higher)</label>
+            <input type="number" id="inp-priority" value="1" min="1" max="10" />
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn-primary" onclick="addProcessFromForm()">Add Process</button>
+        </div>
+      </div>
+
+      <!-- Process Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Process Queue <span class="text-muted" style="font-weight:400;font-size:0.85rem">(<span id="proc-count">0</span> processes)</span></div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>PID</th><th>Arrival</th><th>Burst Schedule</th><th>Priority</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="proc-tbody">
+              <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">
+                No processes added yet. Use the form above or load the demo.
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Algorithm Selector & Run -->
+      <div class="card glow-hover">
+        <div class="card-header">
+          <div class="card-title">Algorithm Configuration</div>
+        </div>
+        <div class="form-grid" style="max-width:600px">
+          <div class="form-group">
+            <label class="form-label">Scheduling Algorithm</label>
+            <select id="algo-select">
+              <option value="0">FCFS — First Come First Served</option>
+              <option value="1">SJF — Shortest Job First (AI Predicted)</option>
+              <option value="2">SRTF — Shortest Remaining Time (Preemptive)</option>
+              <option value="3">RR — Round Robin</option>
+              <option value="4">Priority Scheduling</option>
+            </select>
+          </div>
+          <div class="form-group" id="quantum-row" class="hidden">
+            <label class="form-label">Time Quantum (ms)</label>
+            <input type="number" id="quantum-input" value="2" min="1" max="50" />
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn-primary"   onclick="runClassic()">Run Simulation</button>
+          <button class="btn-secondary" onclick="compareAllAlgos()">Compare All Algorithms</button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results-section" class="hidden">
+        <div class="card">
+          <div class="card-title mb-2">Performance Metrics</div>
+          <div id="metrics-panel"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title mb-2">Gantt Chart</div>
+          <div id="gantt-container" class="gantt-container"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title mb-2">Per-Process Breakdown</div>
+          <div class="table-wrapper" id="per-proc-table"></div>
+        </div>
+      </div>
+
+      <!-- Comparison section -->
+      <div id="compare-section" class="card hidden">
+        <div class="card-title mb-2">Algorithm Comparison</div>
+        <div id="compare-table-container" class="table-wrapper"></div>
+      </div>
+
+    </div><!-- /panel-classic -->
+
+    <!-- ════════════════  DUEL MODE  ══════════════════════════════════ -->
+    <div id="panel-duel" class="hidden">
+
+      <div class="hero-strip">
+        <div>
+          <div class="hero-title">Scheduling Duel — Human vs AI</div>
+          <div class="hero-desc">
+            You arrange processes into a CPU execution order. The AI simultaneously
+            runs Shortest Job First with Exponential Smoothing burst prediction.
+            Whoever achieves a lower <strong>Average Waiting Time</strong> wins!
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Duel Setup</div>
+        </div>
+        <div class="form-grid" style="max-width:300px">
+          <div class="form-group">
+            <label class="form-label">Number of Processes</label>
+            <input type="number" id="duel-proc-count" value="5" min="3" max="10" />
+          </div>
+        </div>
+        <button class="btn-primary" onclick="startDuel()">Start Duel</button>
+      </div>
+
+      <div id="duel-arena"></div>
+      <div id="duel-result" class="hidden"></div>
+
+    </div><!-- /panel-duel -->
+
+    <!-- ════════════════  SURVIVAL MODE  ══════════════════════════════ -->
+    <div id="panel-survival" class="hidden">
+
+      <div class="hero-strip">
+        <div>
+          <div class="hero-title">System Survival — Process Storm</div>
+          <div class="hero-desc">
+            Waves of processes arrive with exponentially growing frequency.
+            Switch algorithms and adjust the time quantum dynamically to prevent
+            your ready queue from overflowing and crashing the virtual OS!
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Survival Controls</div>
+        </div>
+        <div class="survival-controls">
+          <div class="form-group" style="min-width:220px">
+            <label class="form-label">Algorithm</label>
+            <select id="survival-algo-select" onchange="survivalSwitchAlgo()">
+              <option value="0">FCFS</option>
+              <option value="1">SJF (AI)</option>
+              <option value="2">SRTF (AI)</option>
+              <option value="3">Round Robin</option>
+              <option value="4">Priority</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">RR Quantum (ms)</label>
+            <input type="number" id="survival-quantum" value="2" min="1" max="20" style="width:80px" onchange="survivalAdjustQuantum()" />
+          </div>
+          <button class="btn-success" onclick="startSurvival()">Start Storm</button>
+        </div>
+
+        <div id="survival-scoreboard"></div>
+
+        <div class="mb-2">
+          <span class="section-subtitle">Ready Queue Pressure</span>
+          <div id="survival-queue-bar"></div>
+        </div>
+
+        <div id="survival-overflow" class="overflow-banner hidden">
+          SYSTEM CRASH — Queue Overflow! Try a faster algorithm or smaller quantum.
+          <br><button class="btn-danger mt-2" onclick="startSurvival()">Restart</button>
+        </div>
+      </div>
+
+      <div class="card">
+          <div class="card-title mb-2">System Log</div>
+        <div id="survival-log"></div>
+      </div>
+
+      <div class="card">
+          <div class="card-title mb-2">Last Wave Gantt</div>
+        <div id="survival-gantt" class="gantt-container"></div>
+      </div>
+
+    </div><!-- /panel-survival -->
+
+  </main>
+
+  <!-- ══════════════════════  FOOTER  ════════════════════════════════ -->
+  <footer class="app-footer">
+    OS-Quest &mdash; Built with a C Event-Driven Engine + AI Burst Prediction &mdash; College Expo Project
+  </footer>
+
+</div><!-- /app-shell -->
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Scripts (order matters) -->
+<script src="js/scheduler_js.js"></script>
+<script src="js/gantt.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

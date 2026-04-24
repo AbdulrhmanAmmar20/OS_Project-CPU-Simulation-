@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+react_dashboard/node_modules/
+
+# Build outputs
+react_dashboard/dist/
+react_dashboard/.vite/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Compiled C
+c_engine/*.o
+c_engine/*.exe
+c_engine/scheduler_wasm.js
+c_engine/scheduler_wasm.wasm
+
+# Logs
+npm-debug.log*
+yarn-error.log
