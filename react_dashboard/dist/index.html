@@ -5,11 +5,360 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OS-Quest — AI Scheduling Arena</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" />
-    <script type="module" crossorigin src="/assets/index-17bLmP94.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CV_EiVrs.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap" />
+    <style>
+      /* ── Page Loader ─────────────────────────────────────────── */
+      #page-loader {
+        position: fixed; inset: 0; z-index: 9999;
+        background: #000d07;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        overflow: hidden;
+        transition: opacity .6s ease, visibility .6s ease;
+      }
+      #page-loader.loader-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+      .ld-scanline {
+        position: absolute; inset: 0; pointer-events: none;
+        background: repeating-linear-gradient(to bottom,
+          transparent 0px, transparent 3px,
+          rgba(45,212,191,.03) 3px, rgba(45,212,191,.03) 4px);
+        animation: ldScan 8s linear infinite;
+      }
+      @keyframes ldScan { to { background-position: 0 100%; } }
+
+      .ld-particles { position: absolute; inset: 0; pointer-events: none; }
+      .ld-p {
+        position: absolute; width: 3px; height: 3px; border-radius: 50%;
+        background: #2dd4bf; box-shadow: 0 0 6px #2dd4bf;
+        animation: ldFloat var(--d,4s) var(--del,0s) ease-in infinite; opacity: 0;
+      }
+      @keyframes ldFloat {
+        0%   { opacity:0; transform: translateX(0) translateY(0); }
+        10%  { opacity:.8; }
+        90%  { opacity:.4; }
+        100% { opacity:0; transform: translateX(var(--x,0)) translateY(-120px); }
+      }
+
+      /* ── row layout ── */
+      .ld-row {
+        display: flex; align-items: center; justify-content: center;
+        gap: 3.5rem; margin-bottom: 2.5rem; position: relative; z-index: 2;
+      }
+
+      /* ── CPU cube ── */
+      .ld-scene { perspective: 600px; }
+      .ld-cpu {
+        width: 190px; height: 190px; position: relative;
+        transform-style: preserve-3d;
+        animation: ldSpin 12s linear infinite;
+      }
+      @keyframes ldSpin {
+        from { transform: rotateX(-20deg) rotateY(0deg); }
+        to   { transform: rotateX(-20deg) rotateY(360deg); }
+      }
+      .ld-face {
+        position: absolute; width: 190px; height: 190px;
+        backface-visibility: hidden;
+      }
+      .ld-face svg { width: 100%; height: 100%; display: block; }
+      .ld-face.front  { transform: translateZ(95px); }
+      .ld-face.back   { transform: rotateY(180deg) translateZ(95px); }
+      .ld-face.top    { transform: rotateX(90deg)  translateZ(95px); }
+      .ld-face.bottom { transform: rotateX(-90deg) translateZ(95px); }
+      .ld-face.left   { transform: rotateY(-90deg) translateZ(95px); }
+      .ld-face.right  { transform: rotateY(90deg)  translateZ(95px); }
+      .ld-pin-row { position: absolute; display: flex; gap: 4px; }
+      .ld-pin { width:4px; height:10px; background:#2dd4bf; border-radius:1px; box-shadow:0 0 4px #2dd4bf88; }
+      .ld-pins-bottom { bottom:-10px; left:19px; }
+      .ld-pins-top    { top:-10px;    left:19px; }
+      .ld-pins-left   { left:-10px;   top:25px; flex-direction:column; }
+      .ld-pins-right  { right:-10px;  top:25px; flex-direction:column; }
+      .ld-pins-left .ld-pin, .ld-pins-right .ld-pin { width:10px; height:4px; }
+
+      /* ── KFUPM logo scene ── */
+      .ld-logo-scene { position: relative; perspective: 800px; }
+      .ld-logo-group {
+        position: relative;
+        transform-style: preserve-3d;
+        animation: ldLogoFloat 5s ease-in-out infinite;
+      }
+      .ld-logo-glow { filter: drop-shadow(0 0 12px rgba(45,212,191,0.35)); }
+      @keyframes ldLogoFloat {
+        0%,100% { transform: rotateY(-10deg) rotateX(5deg); }
+        50%     { transform: rotateY(10deg)  rotateX(-5deg); }
+      }
+      .ld-logo-layer {
+        position: relative; width: 280px; height: 106px;
+        transform-style: preserve-3d;
+      }
+      .ld-logo-face {
+        position: absolute; width: 280px; height: 106px;
+        backface-visibility: hidden;
+      }
+      .ld-logo-front { transform: translateZ(13px); }
+      .ld-logo-back  { transform: rotateY(180deg) translateZ(13px); }
+
+      @keyframes orbit  { from { transform: rotateY(0deg);   } to { transform: rotateY(360deg);  } }
+      @keyframes orbit2 { from { transform: rotateY(360deg); } to { transform: rotateY(0deg);    } }
+      @keyframes pulse2 {
+        from { opacity:.4; transform:scale(.8); }
+        to   { opacity:1;  transform:scale(1.2); }
+      }
+
+      /* ── progress & labels ── */
+      .ld-bar {
+        position: relative; z-index: 2;
+        width: min(520px, 85vw); height: 6px;
+        background: rgba(45,212,191,.12); border-radius: 3px; overflow: hidden;
+        margin-bottom: 1rem;
+      }
+      .ld-fill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, #0f766e, #2dd4bf);
+        border-radius: 3px; box-shadow: 0 0 10px rgba(45,212,191,0.6);
+        transition: width .25s ease;
+      }
+      .ld-status {
+        position: relative; z-index: 2;
+        color: #2dd4bf; font-family: 'Share Tech Mono', monospace;
+        font-size: .78rem; letter-spacing: .15em; text-transform: uppercase;
+        margin-bottom: .4rem; opacity: .85;
+      }
+      .ld-pct {
+        position: relative; z-index: 2;
+        color: #2dd4bf; font-family: 'Share Tech Mono', monospace;
+        font-size: 1.6rem; font-weight: 700; letter-spacing: .05em;
+        text-shadow: 0 0 16px #2dd4bf;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-CWY6uvyy.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BSLlq3my.css">
   </head>
   <body class="bg-cyber-900 text-slate-100 overflow-hidden">
+
+    <!-- ── Loader ─────────────────────────────────────────────────── -->
+    <div id="page-loader">
+      <div class="ld-scanline"></div>
+      <div class="ld-particles">
+        <div class="ld-p" style="left:90.2251%;bottom:13.6605%;--d:4.126s;--del:4.563s;--x:-21.22px;"></div>
+        <div class="ld-p" style="left:67.857%;bottom:8.95104%;--d:2.823s;--del:2.399s;--x:-21.38px;"></div>
+        <div class="ld-p" style="left:93.2654%;bottom:18.7185%;--d:3.290s;--del:4.780s;--x:47.73px;"></div>
+        <div class="ld-p" style="left:70.7412%;bottom:18.5805%;--d:3.057s;--del:3.963s;--x:-18.98px;"></div>
+        <div class="ld-p" style="left:40.0736%;bottom:4.75202%;--d:6.460s;--del:0.857s;--x:-41.90px;"></div>
+        <div class="ld-p" style="left:17.3321%;bottom:14.4131%;--d:3.900s;--del:1.905s;--x:-21.93px;"></div>
+        <div class="ld-p" style="left:70.9621%;bottom:6.67639%;--d:4.936s;--del:1.799s;--x:-37.42px;"></div>
+        <div class="ld-p" style="left:32.1904%;bottom:18.5903%;--d:5.003s;--del:2.817s;--x:0.28px;"></div>
+        <div class="ld-p" style="left:39.5248%;bottom:5.37777%;--d:6.428s;--del:0.516s;--x:49.92px;"></div>
+        <div class="ld-p" style="left:70.7766%;bottom:18.1044%;--d:6.309s;--del:3.107s;--x:-8.06px;"></div>
+        <div class="ld-p" style="left:28.0074%;bottom:11.4744%;--d:5.319s;--del:4.908s;--x:-29.59px;"></div>
+        <div class="ld-p" style="left:71.4299%;bottom:9.79121%;--d:5.766s;--del:2.476s;--x:48.89px;"></div>
+        <div class="ld-p" style="left:12.5247%;bottom:12.0296%;--d:5.355s;--del:0.102s;--x:-18.33px;"></div>
+        <div class="ld-p" style="left:34.42%;bottom:0.730121%;--d:5.685s;--del:2.068s;--x:-46.41px;"></div>
+        <div class="ld-p" style="left:5.07463%;bottom:2.68989%;--d:4.936s;--del:3.209s;--x:0.67px;"></div>
+        <div class="ld-p" style="left:5.81743%;bottom:5.04442%;--d:5.918s;--del:0.556s;--x:34.40px;"></div>
+        <div class="ld-p" style="left:72.8578%;bottom:5.31192%;--d:4.484s;--del:2.131s;--x:47.89px;"></div>
+        <div class="ld-p" style="left:75.0852%;bottom:4.33998%;--d:3.135s;--del:4.831s;--x:9.38px;"></div>
+        <div class="ld-p" style="left:13.8701%;bottom:13.7597%;--d:5.948s;--del:4.577s;--x:13.18px;"></div>
+        <div class="ld-p" style="left:44.4112%;bottom:9.52865%;--d:3.196s;--del:3.847s;--x:45.92px;"></div>
+        <div class="ld-p" style="left:59.0453%;bottom:0.767814%;--d:3.407s;--del:0.248s;--x:5.01px;"></div>
+        <div class="ld-p" style="left:28.9989%;bottom:7.43726%;--d:3.749s;--del:3.826s;--x:-18.78px;"></div>
+      </div>
+
+      <div class="ld-row">
+        <!-- CPU 3-D cube -->
+        <div class="ld-scene">
+          <div class="ld-cpu">
+            <div class="ld-face front">
+              <svg viewBox="0 0 140 140">
+                <defs>
+                  <pattern id="ldgrid" width="10" height="10" patternUnits="userSpaceOnUse">
+                    <path d="M10 0L0 0 0 10" fill="none" stroke="#2dd4bf" stroke-width="0.3" opacity="0.4"/>
+                  </pattern>
+                </defs>
+                <rect width="140" height="140" fill="url(#ldgrid)"/>
+                <rect x="20" y="20" width="100" height="100" fill="none" stroke="#2dd4bf" stroke-width="1.5"/>
+                <rect x="30" y="30" width="80" height="80" fill="rgba(13,148,136,0.03)" stroke="#2dd4bf44" stroke-width="0.5"/>
+                <line x1="70" y1="30" x2="70" y2="110" stroke="#2dd4bf22" stroke-width="0.5"/>
+                <line x1="30" y1="70" x2="110" y2="70" stroke="#2dd4bf22" stroke-width="0.5"/>
+                <rect x="45" y="45" width="50" height="50" fill="rgba(13,148,136,0.06)" stroke="#2dd4bf" stroke-width="1"/>
+                <text x="70" y="74" text-anchor="middle" fill="#2dd4bf" font-size="8" font-family="Share Tech Mono" letter-spacing="1">CPU-X1</text>
+                <circle cx="70" cy="63" r="7" fill="none" stroke="#2dd4bf" stroke-width="0.8" opacity="0.6"/>
+                <path d="M8,0 L8,20 M132,0 L132,20 M8,140 L8,120 M132,140 L132,120 M0,8 L20,8 M0,132 L20,132 M140,8 L120,8 M140,132 L120,132" stroke="#2dd4bf" stroke-width="1.2" fill="none" opacity="0.7"/>
+              </svg>
+              <div class="ld-pin-row ld-pins-bottom"><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div></div>
+              <div class="ld-pin-row ld-pins-top"><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div></div>
+              <div class="ld-pin-row ld-pins-left"><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div></div>
+              <div class="ld-pin-row ld-pins-right"><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div><div class="ld-pin"></div></div>
+            </div>
+            <div class="ld-face back">
+              <svg viewBox="0 0 140 140">
+                <rect width="140" height="140" fill="#000d07"/>
+                <rect x="15" y="15" width="110" height="110" fill="none" stroke="#2dd4bf55" stroke-width="1"/>
+                <path d="M15,15 L125,125 M125,15 L15,125" stroke="#2dd4bf22" stroke-width="0.5"/>
+              </svg>
+            </div>
+            <div class="ld-face top">
+              <svg viewBox="0 0 140 140">
+                <defs>
+                  <pattern id="lddots" width="12" height="12" patternUnits="userSpaceOnUse">
+                    <circle cx="6" cy="6" r="1.2" fill="#2dd4bf" opacity="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="140" height="140" fill="#020e06"/>
+                <rect width="140" height="140" fill="url(#lddots)"/>
+                <rect x="25" y="25" width="90" height="90" fill="none" stroke="#2dd4bf" stroke-width="1.5"/>
+                <rect x="45" y="45" width="50" height="50" fill="#001e1c" stroke="#2dd4bf" stroke-width="1"/>
+                <circle cx="70" cy="70" r="14" fill="none" stroke="#2dd4bf88" stroke-width="0.8"/>
+                <circle cx="70" cy="70" r="5" fill="#0d948833" stroke="#2dd4bf" stroke-width="0.8"/>
+              </svg>
+            </div>
+            <div class="ld-face bottom">
+              <svg viewBox="0 0 140 140">
+                <rect width="140" height="140" fill="#010a04"/>
+                <defs>
+                  <pattern id="ldpgrid" width="14" height="14" patternUnits="userSpaceOnUse">
+                    <circle cx="7" cy="7" r="2" fill="#444" opacity="0.7"/>
+                  </pattern>
+                </defs>
+                <rect width="140" height="140" fill="url(#ldpgrid)"/>
+              </svg>
+            </div>
+            <div class="ld-face left">
+              <svg viewBox="0 0 140 140">
+                <rect width="140" height="140" fill="#010d05"/>
+                <path d="M0,20 L140,20 M0,50 L140,50 M0,80 L140,80 M0,110 L140,110" stroke="#2dd4bf33" stroke-width="0.5"/>
+              </svg>
+            </div>
+            <div class="ld-face right">
+              <svg viewBox="0 0 140 140">
+                <rect width="140" height="140" fill="#010d05"/>
+                <path d="M20,0 L20,140 M50,0 L50,140 M80,0 L80,140 M110,0 L110,140" stroke="#2dd4bf33" stroke-width="0.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- KFUPM 3-D Logo -->
+        <div class="ld-logo-scene">
+          <div class="ld-logo-group ld-logo-glow">
+            <div class="ld-logo-layer">
+              <!-- Front face -->
+              <div class="ld-logo-face ld-logo-front">
+                <svg viewBox="0 0 210 80" width="280" height="106">
+                  <polygon points="13,4 24,4 30,10 30,28 24,34 13,34 7,28 7,10" fill="#0d5c50" stroke="#2dd4bf" stroke-width="1.2"/>
+                  <rect x="11" y="11" width="3" height="16" fill="#2dd4bf" rx="0.5"/>
+                  <rect x="15.5" y="9" width="3" height="20" fill="#2dd4bf" rx="0.5"/>
+                  <rect x="20" y="11" width="3" height="16" fill="#2dd4bf" rx="0.5"/>
+                  <text x="38" y="28" font-family="'Share Tech Mono',monospace" font-size="24" font-weight="bold" fill="#2dd4bf" letter-spacing="2">KFUPM</text>
+                  <line x1="38" y1="36" x2="205" y2="36" stroke="#2dd4bf55" stroke-width="0.8"/>
+                  <text x="38" y="52" font-family="'Share Tech Mono',monospace" font-size="8.5" fill="#2dd4bf99" letter-spacing="1.5">CPU SIMULATION PROJECT</text>
+                  <line x1="38" y1="58" x2="205" y2="58" stroke="#2dd4bf22" stroke-width="0.5"/>
+                </svg>
+              </div>
+              <!-- Back face -->
+              <div class="ld-logo-face ld-logo-back">
+                <svg viewBox="0 0 210 80" width="280" height="106">
+                  <rect width="210" height="80" fill="#042e26"/>
+                  <text x="105" y="36" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="#2dd4bf33" letter-spacing="3">KING FAHD UNIVERSITY</text>
+                  <text x="105" y="52" text-anchor="middle" font-family="'Share Tech Mono'" font-size="7" fill="#2dd4bf22" letter-spacing="2">PETROLEUM &amp; MINERALS</text>
+                </svg>
+              </div>
+              <!-- Top edge -->
+              <div style="width:280px;height:18px;position:absolute;top:0;left:0;transform-origin:top center;transform:rotateX(90deg);background:rgba(0,120,100,0.85);border:1px solid #2dd4bf44;"></div>
+              <!-- Bottom edge -->
+              <div style="width:280px;height:18px;position:absolute;top:88px;left:0;transform-origin:bottom center;transform:rotateX(-90deg);background:rgba(0,70,55,0.85);border:1px solid #2dd4bf33;"></div>
+              <!-- Left edge -->
+              <div style="position:absolute;top:0;left:0;width:18px;height:106px;transform-origin:left center;transform:rotateY(-90deg);background:rgba(0,80,65,0.85);border:1px solid #2dd4bf44;"></div>
+              <!-- Right edge -->
+              <div style="position:absolute;top:0;left:262px;width:18px;height:106px;transform-origin:right center;transform:rotateY(90deg);background:rgba(0,80,65,0.85);border:1px solid #2dd4bf44;"></div>
+            </div>
+
+            <!-- Orbit rings -->
+            <div style="position:absolute;width:280px;height:280px;left:15px;top:-40px;transform-style:preserve-3d;animation:orbit 6s linear infinite;">
+              <div style="position:absolute;width:280px;height:280px;border:1px solid #2dd4bf1a;border-radius:50%;transform:rotateX(80deg);"></div>
+            </div>
+            <div style="position:absolute;width:226px;height:226px;left:27px;top:-10px;transform-style:preserve-3d;animation:orbit2 9s linear infinite;">
+              <div style="position:absolute;width:226px;height:226px;border:1px dashed #2dd4bf14;border-radius:50%;transform:rotateX(70deg) rotateZ(45deg);"></div>
+            </div>
+
+            <!-- Corner dots -->
+            <div style="position:absolute;width:6px;height:6px;border-radius:50%;background:#2dd4bf;left:12px;top:90px;animation:pulse2 1s ease-in-out infinite alternate;"></div>
+            <div style="position:absolute;width:6px;height:6px;border-radius:50%;background:#2dd4bf;right:12px;top:90px;animation:pulse2 1s ease-in-out infinite alternate .5s;"></div>
+            <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#2dd4bf88;left:35px;top:70px;animation:pulse2 1.4s ease-in-out infinite alternate .2s;"></div>
+            <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#2dd4bf88;right:35px;top:70px;animation:pulse2 1.4s ease-in-out infinite alternate .7s;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ld-bar"><div class="ld-fill" id="ld-fill"></div></div>
+      <div class="ld-status" id="ld-status">BOOTING CORES</div>
+      <div class="ld-pct" id="ld-pct">0%</div>
+    </div>
+
     <div id="root"></div>
+
+    <script>
+      (function () {
+        var fill   = document.getElementById('ld-fill');
+        var status = document.getElementById('ld-status');
+        var pct    = document.getElementById('ld-pct');
+        var loader = document.getElementById('page-loader');
+        var dismissed  = false;
+        var animDone   = false;
+        var reactReady = false;
+
+        var steps = [
+          [15,  'LOADING ASSETS'],
+          [35,  'COMPILING SCHEDULER'],
+          [55,  'INITIALIZING ENGINE'],
+          [72,  'MAPPING PROCESSES'],
+          [88,  'CALIBRATING AI-SJF'],
+          [100, 'SYSTEM READY'],
+        ];
+        var i = 0;
+
+        function tick() {
+          if (i >= steps.length) {
+            // Hold at 100% for 400 ms, then try to dismiss
+            animDone = true;
+            setTimeout(tryDismiss, 400);
+            return;
+          }
+          var s = steps[i++];
+          fill.style.width   = s[0] + '%';
+          status.textContent = s[1];
+          pct.textContent    = s[0] + '%';
+          // 500–750 ms per step → ~3–5 s total
+          var delay = 500 + Math.random() * 250;
+          setTimeout(tick, delay);
+        }
+
+        function tryDismiss() {
+          if (animDone && reactReady) dismiss();
+        }
+
+        function dismiss() {
+          if (dismissed) return; dismissed = true;
+          loader.classList.add('loader-hidden');
+          loader.addEventListener('transitionend', function h() {
+            loader.removeEventListener('transitionend', h);
+            loader.remove();
+          });
+        }
+
+        // React calls this after first render; waits for animation to finish too
+        window.__dismissLoader = function () {
+          reactReady = true;
+          tryDismiss();
+        };
+
+        // Start animation
+        setTimeout(tick, 300);
+
+        // Safety fallback at 8 s
+        setTimeout(dismiss, 8000);
+      })();
+    </script>
   </body>
 </html>

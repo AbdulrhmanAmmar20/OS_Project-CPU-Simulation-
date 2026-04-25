@@ -31,8 +31,8 @@ export default function PerformanceGauges({ result, playhead }) {
   }, [result])
 
   return (
-    <div className="glass rounded-xl h-full border border-violet-900/30 flex flex-col p-3 gap-2">
-      <span className="text-[10px] font-mono uppercase tracking-wider text-violet-400">Performance</span>
+    <div className="glass rounded-xl h-full border border-teal-900/30 flex flex-col p-3 gap-2">
+      <span className="text-[10px] font-mono uppercase tracking-wider text-teal-400">Performance</span>
 
       {!metrics ? (
         <div className="flex-1 flex items-center justify-center">

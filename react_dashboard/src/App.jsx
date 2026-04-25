@@ -10,9 +10,16 @@ import PerformanceGauges from './components/PerformanceGauges.jsx'
 import GamificationHUD  from './components/GamificationHUD.jsx'
 import SystemConsole    from './components/SystemConsole.jsx'
 import TimeSlider       from './components/TimeSlider.jsx'
+import AlgorithmBook    from './components/AlgorithmBook.jsx'
+import AlgorithmSandbox from './components/AlgorithmSandbox.jsx'
+import CPUArena         from './components/CPUArena.jsx'
+import VirtualDesktop   from './components/VirtualDesktop.jsx'
 
 // ─────────────────────────────────────────────────────────────────────────────
 export default function App() {
+  // ── Dismiss the HTML shell loader on first mount ──────────────────
+  useEffect(() => { window.__dismissLoader?.() }, [])
+
   // ── Process definitions ──────────────────────────────────────────
   const [processes, setProcesses] = useState(DEMO_PROCESSES)
   const [nextPid, setNextPid]     = useState(DEMO_PROCESSES.length)
@@ -30,6 +37,12 @@ export default function App() {
   const [isPlaying,  setIsPlaying]  = useState(false)
   const [playSpeed,  setPlaySpeed]  = useState(1)   // 1x, 2x, 5x
   const playTimerRef = useRef(null)
+
+  // ── Algorithm book overlay ─────────────────────────────────────
+  const [showBook,    setShowBook]    = useState(false)
+  const [showSandbox, setShowSandbox] = useState(false)
+  const [showArena,   setShowArena]   = useState(false)
+  const [showDesktop, setShowDesktop] = useState(false)
 
   // ── Mode ─────────────────────────────────────────────────────────
   const [mode, setMode]         = useState('auto')   // 'auto' | 'manual'
@@ -161,6 +174,42 @@ export default function App() {
           ))}
         </div>
 
+        {/* Algorithm book button */}
+        <button
+          onClick={() => setShowBook(true)}
+          className="btn-cyber py-2 px-4 text-sm border border-teal-700/50 text-teal-300 hover:text-teal-100 hover:border-teal-500/80 hover:bg-teal-900/30 transition-all"
+          title="Algorithm Reference Guide"
+        >
+          📖 Guide
+        </button>
+
+        {/* Sandbox button */}
+        <button
+          onClick={() => setShowSandbox(true)}
+          className="btn-cyber py-2 px-4 text-sm border border-teal-700/50 text-teal-300 hover:text-teal-100 hover:border-teal-500/80 hover:bg-teal-900/30 transition-all"
+          title="Algorithm Sandbox"
+        >
+          ⚡ Sandbox
+        </button>
+
+        {/* Arena button */}
+        <button
+          onClick={() => setShowArena(true)}
+          className="btn-cyber py-2 px-4 text-sm border border-teal-700/50 text-teal-300 hover:text-teal-100 hover:border-teal-500/80 hover:bg-teal-900/30 transition-all"
+          title="CPU Arena — Manual &amp; Coder Mode"
+        >
+          ⚔ Arena
+        </button>
+
+        {/* Virtual Desktop button */}
+        <button
+          onClick={() => setShowDesktop(true)}
+          className="btn-cyber py-2 px-4 text-sm border border-teal-700/50 text-teal-300 hover:text-teal-100 hover:border-teal-500/80 hover:bg-teal-900/30 transition-all"
+          title="Virtual Desktop Environment"
+        >
+          🖥 Desktop
+        </button>
+
         {/* Run button */}
         <button
           onClick={run}
@@ -252,6 +301,13 @@ export default function App() {
 
         </main>
       </div>
+
+      {/* ── Algorithm Book Overlay ─────────────────────────────────── */}
+      {showBook && <AlgorithmBook onClose={() => setShowBook(false)} />}
+      {/* ── Algorithm Sandbox Overlay ─────────────────────────── */}
+      {showSandbox && <AlgorithmSandbox onClose={() => setShowSandbox(false)} />}
+      {showArena   && <CPUArena         onClose={() => setShowArena(false)}   />}
+      {showDesktop && <VirtualDesktop   onClose={() => setShowDesktop(false)} />}
     </div>
   )
 }

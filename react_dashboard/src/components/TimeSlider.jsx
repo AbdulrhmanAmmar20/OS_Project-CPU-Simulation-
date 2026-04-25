@@ -26,10 +26,10 @@ export default function TimeSlider({
   }
 
   return (
-    <div className="glass rounded-xl h-full border border-violet-900/30 flex flex-col px-4 py-3 gap-2.5 justify-center">
+    <div className="glass rounded-xl h-full border border-teal-900/30 flex flex-col px-4 py-3 gap-2.5 justify-center">
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono uppercase tracking-wider text-violet-400">
+        <span className="text-[10px] font-mono uppercase tracking-wider text-teal-400">
           Time Travel
         </span>
         <span className="text-[10px] font-mono text-cyber-200 tabular-nums">
@@ -83,7 +83,7 @@ export default function TimeSlider({
               disabled={!hasResult}
               className={`text-[10px] font-mono px-2 h-8 transition-all disabled:opacity-30 ${
                 playSpeed === s
-                  ? 'bg-violet-800/70 text-violet-200'
+                  ? 'bg-teal-800/70 text-teal-200'
                   : 'text-cyber-300 hover:bg-cyber-700/50 hover:text-white'
               }`}
             >
@@ -96,7 +96,7 @@ export default function TimeSlider({
       {/* Progress bar */}
       <div className="h-1 bg-cyber-700 rounded-full overflow-hidden">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-violet-600 to-indigo-500 transition-all duration-100"
+          className="h-full rounded-full bg-gradient-to-r from-teal-600 to-teal-400 transition-all duration-100"
           style={{ width: `${pct}%`, boxShadow: '0 0 6px rgba(139,92,246,0.5)' }}
         />
       </div>

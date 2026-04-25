@@ -102,19 +102,19 @@ export default function ProcessZones({ statesAtTime, processes, colorOf, result,
 
       {/* ── Zone 3: CPU Core ──────────────────────────────────────── */}
       <div className={`glass rounded-xl p-3 flex flex-col items-center justify-center relative overflow-hidden border ${
-        running.length > 0 ? 'border-violet-500/50 animate-pulse-neon' : 'border-cyber-500/30'
+        running.length > 0 ? 'border-teal-500/50 animate-pulse-neon' : 'border-cyber-500/30'
       }`}>
-        <ZoneHeader label="CPU Core" count={running.length > 0 ? 1 : 0} color="text-violet-400" dotColor="bg-violet-400" glowClass="shadow-neon-violet" />
+        <ZoneHeader label="CPU Core" count={running.length > 0 ? 1 : 0} color="text-teal-400" dotColor="bg-teal-400" glowClass="shadow-neon-teal" />
 
         {/* Rotating ring */}
         {running.length > 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div
-              className="absolute w-24 h-24 rounded-full border border-violet-500/20 animate-spin-slow"
+              className="absolute w-24 h-24 rounded-full border border-teal-500/20 animate-spin-slow"
               style={{ borderTopColor: 'rgba(139,92,246,0.5)' }}
             />
             <div
-              className="absolute w-32 h-32 rounded-full border border-violet-800/10 animate-spin-slow"
+              className="absolute w-32 h-32 rounded-full border border-teal-800/10 animate-spin-slow"
               style={{ animationDirection: 'reverse', borderTopColor: 'rgba(167,139,250,0.2)' }}
             />
           </div>

@@ -120,7 +120,7 @@ function AICompareTable({ current, ai, algo }) {
     <div className="rounded-lg border border-cyber-600/20 overflow-hidden">
       <div className="grid grid-cols-3 bg-cyber-800/60 text-[8px] font-mono text-cyber-300 uppercase">
         <div className="px-1.5 py-1">Metric</div>
-        <div className="px-1.5 py-1 text-violet-400">{ALGO_NAMES[algo] || 'Yours'}</div>
+        <div className="px-1.5 py-1 text-teal-400">{ALGO_NAMES[algo] || 'Yours'}</div>
         <div className="px-1.5 py-1 text-cyan-400">AI-SJF</div>
       </div>
       <CompRow label="Wait" a={`${current.avgWait.toFixed(1)}`} b={`${ai.avgWait.toFixed(1)}`} aWins={!betterWait} bWins={betterWait} />

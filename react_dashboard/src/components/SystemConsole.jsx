@@ -2,7 +2,7 @@ import { useEffect, useRef, useMemo } from 'react'
 
 const TYPE_COLORS = {
   arrival: 'text-cyan-400',
-  cpu:     'text-violet-400',
+  cpu:     'text-teal-400',
   io:      'text-amber-400',
   ai:      'text-emerald-400',
   preempt: 'text-pink-400',
@@ -11,7 +11,7 @@ const TYPE_COLORS = {
 
 const TYPE_BADGE_BG = {
   arrival: 'bg-cyan-900/40 border-cyan-700/40',
-  cpu:     'bg-violet-900/40 border-violet-700/40',
+  cpu:     'bg-teal-900/40 border-teal-700/40',
   io:      'bg-amber-900/40 border-amber-700/40',
   ai:      'bg-emerald-900/40 border-emerald-700/40',
   preempt: 'bg-pink-900/40 border-pink-700/40',

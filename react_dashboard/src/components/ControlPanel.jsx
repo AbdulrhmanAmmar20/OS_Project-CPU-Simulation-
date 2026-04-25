@@ -72,8 +72,8 @@ export default function ControlPanel({
               onClick={() => setAlgo(a.value)}
               className={`w-full text-left px-3 py-2 rounded-lg border transition-all text-xs ${
                 algo === a.value
-                  ? 'bg-violet-900/50 border-violet-500/60 text-violet-200 shadow-neon-violet'
-                  : 'border-cyber-500/30 text-cyber-200 hover:border-violet-700/50 hover:bg-cyber-700/40'
+                  ? 'bg-teal-900/50 border-teal-500/60 text-teal-200 shadow-neon-teal'
+                  : 'border-cyber-500/30 text-cyber-200 hover:border-teal-700/50 hover:bg-cyber-700/40'
               }`}
             >
               <div className="font-mono font-semibold">{a.label}</div>
@@ -169,7 +169,7 @@ export default function ControlPanel({
                 onDrop={() => handleDrop(p.pid)}
                 className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border transition-all ${
                   mode === 'manual' ? 'cursor-grab active:cursor-grabbing' : ''
-                } bg-cyber-800/50 border-cyber-600/30 hover:border-violet-700/40 group`}
+                } bg-cyber-800/50 border-cyber-600/30 hover:border-teal-700/40 group`}
               >
                 {mode === 'manual' && (
                   <span className="text-[10px] font-mono text-cyber-300 w-3">{idx + 1}</span>
@@ -210,7 +210,7 @@ function SectionLabel({ children }) {
   )
 }
 function Divider() {
-  return <div className="h-px bg-gradient-to-r from-transparent via-violet-900/40 to-transparent" />
+  return <div className="h-px bg-gradient-to-r from-transparent via-teal-900/40 to-transparent" />
 }
 function Field({ label, children, full }) {
   return (
