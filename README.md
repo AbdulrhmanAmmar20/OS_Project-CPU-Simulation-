@@ -39,6 +39,66 @@ os_project/
 
 ---
 
+## Requirements
+### Functional Requirements
+
+FR1 — Process Management
+
+The system shall allow users to add up to 64 processes, each with an arrival time, priority, multiple CPU bursts, and interleaved I/O bursts.
+The system shall support adding processes manually, randomly, or via a demo preset.
+The system shall allow removing individual processes or clearing all processes.
+
+FR2 — Scheduling Algorithms
+The system shall implement five scheduling algorithms: FCFS, SJF (non-preemptive), SRTF (preemptive), Round Robin, and Priority.
+The system shall allow the user to switch algorithms before running the simulation.
+Round Robin shall support a configurable time quantum (1–100 ms).
+
+FR3 — AI Burst Prediction
+The system shall use Exponential Smoothing (τ_{n+1} = α·t_n + (1−α)·τ_n) to predict future CPU bursts for SJF and SRTF.
+The smoothing factor α shall default to 0.5 and be tunable per process.
+
+FR4 — Simulation Engine
+The engine shall use a discrete event-driven architecture with a min-heap event queue.
+The engine shall handle events: Arrival, CPU Burst End, I/O End, Quantum Expire, and Preemption.
+The engine shall produce a complete Gantt chart (slice list) and per-process metrics as output.
+
+FR5 — Visualization
+The system shall render an animated, color-coded Gantt chart for all processes.
+The system shall display per-process state badges (NEW / READY / RUNNING / WAITING / DONE) in real time.
+The system shall display aggregate metrics: Avg Waiting Time, Avg Turnaround Time, Avg Response Time, CPU Utilization, and Throughput.
+
+FR6 — Time Travel Playback
+The system shall provide a time scrubber allowing the user to jump to any simulation tick.
+The system shall support playback speeds of 1×, 2×, and 5×.
+
+FR7 — Simulation Modes
+Classic Mode: User configures and runs a simulation; results are displayed post-run.
+Duel Mode: User manually orders processes; the AI simultaneously runs SJF; side-by-side metrics comparison determines a winner.
+Survival Mode: Waves of processes arrive automatically; user must adjust algorithm/quantum dynamically to avoid a ready-queue overflow crash.
+
+FR8 — Algorithm Sandbox
+The system shall provide an in-browser code editor (Monaco) allowing users to write and execute custom scheduling functions.
+Custom schedulers shall receive readyQueue, currentTime, and history and return a PID.
+
+FR9 — Input Validation
+The system shall reject negative burst times, zero burst counts, negative arrival times, and empty required fields.
+Priority values shall be clamped to the range [0, 99].
+
+### Non-Functional Requirements
+
+NFR1 — Performance: The JS engine shall complete a simulation of 64 processes with 16 bursts each in under 50 ms on a modern browser.
+
+NFR2 — Portability: The plain-HTML version (index.html) shall run without any build step or server — directly from the filesystem in any modern browser.
+
+NFR3 — Consistency: The C engine and the JavaScript engine shall produce bit-identical Gantt slices and metric values for the same input.
+
+NFR4 — Usability: The UI shall be fully operable without any prior training; all controls shall be labeled and validated with inline error feedback.
+
+NFR5 — Maintainability: Each layer (UI, Validation, Engine, Visualization) shall be independently modifiable without changes to other layers.
+
+NFR6 — Browser Compatibility: The application shall run correctly on Chrome 120+, Edge 120+, and Firefox 120+ without plugins.
+
+
 ## Features
 
 ### Three Modes
