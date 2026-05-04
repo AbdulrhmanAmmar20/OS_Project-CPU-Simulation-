@@ -98,6 +98,7 @@ NFR5 — Maintainability: Each layer (UI, Validation, Engine, Visualization) sha
 
 NFR6 — Browser Compatibility: The application shall run correctly on Chrome 120+, Edge 120+, and Firefox 120+ without plugins.
 
+---
 
 ## Features
 
