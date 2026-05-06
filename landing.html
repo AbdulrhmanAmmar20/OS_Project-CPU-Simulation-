@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OS-Quest — Extended from THAHEEN Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Share+Tech+Mono&display=swap" />
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       LANDING  –  OS-Quest × THAHEEN
+       Dark neon theme matching the project
+    ═══════════════════════════════════════════════════════ */
+
+    :root {
+      --bg:        #000d07;
+      --bg2:       #010f08;
+      --green:     #00ff8c;
+      --cyan:      #2dd4bf;
+      --cyan-dim:  #5eead4;
+      --teal:      #0d9488;
+      --purple:    #a78bfa;
+      --orange:    #fb923c;
+      --glass-bg:  rgba(7, 22, 22, 0.72);
+      --glass-bd:  rgba(13, 148, 136, 0.22);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Scrollbar ──────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 2px; }
+
+    /* ── Global scanline overlay ───────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,255,140,0.015) 3px,
+        rgba(0,255,140,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Neon text helpers ─────────────────────────────── */
+    .glow-green {
+      color: var(--green);
+      text-shadow: 0 0 8px var(--green), 0 0 24px rgba(0,255,140,0.5);
+    }
+    .glow-cyan {
+      color: var(--cyan);
+      text-shadow: 0 0 8px var(--cyan), 0 0 24px rgba(45,212,191,0.5);
+    }
+    .glow-purple {
+      color: var(--purple);
+      text-shadow: 0 0 8px var(--purple), 0 0 24px rgba(167,139,250,0.5);
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Glass card ────────────────────────────────────── */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-bd);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+      border-radius: 16px;
+    }
+
+    /* ════════════════════════════════════════════════════
+       SECTION BASICS
+    ═════════════════════════════════════════════════════ */
+    section {
+      position: relative;
+      width: 100%;
+    }
+
+    .section-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §1  HERO
+    ═════════════════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+
+    /* ════════════════════════════════════════════════════
+       CSS FOX SCENE  —  THAHEEN MASCOT
+    ═════════════════════════════════════════════════════ */
+
+    .fox-scene {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 0 0.5rem;
+      z-index: 2;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .grid-bg {
+      position: absolute;
+      inset: -20px;
+      background-image:
+        linear-gradient(rgba(251,146,60,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(251,146,60,0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 30%, transparent 75%);
+    }
+
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 3px,
+        rgba(251,146,60,0.02) 3px, rgba(251,146,60,0.02) 4px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .status-bar {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      color: rgba(251,146,60,0.55);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 3;
+    }
+    .status-bar span { animation: cursorBlink 1s step-end infinite; }
+
+    /* Fox float container */
+    .fox-float {
+      position: relative;
+      width: 190px;
+      height: 210px;
+      animation: foxBob 3.2s ease-in-out infinite;
+      z-index: 3;
+      zoom: 1.6;
+    }
+    @keyframes foxBob {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-11px); }
+    }
+
+    /* HEAD */
+    .head {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 104px; height: 86px;
+      z-index: 4;
+    }
+    .head-shape {
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 76px;
+      background: #010f07;
+      border: 2px solid rgba(251,146,60,0.78);
+      border-radius: 44% 44% 32% 32% / 42% 42% 32% 32%;
+      box-shadow: 0 0 18px rgba(251,146,60,0.25), inset 0 0 22px rgba(251,146,60,0.03);
+    }
+    .ear {
+      position: absolute;
+      top: -28px;
+      width: 34px; height: 38px;
+      z-index: 5;
+    }
+    .ear-l { left: 4px;  transform: rotate(-14deg); transform-origin: bottom center; }
+    .ear-r { right: 4px; transform: rotate(14deg);  transform-origin: bottom center; }
+    .ear::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 17px solid transparent;
+      border-right: 17px solid transparent;
+      border-bottom: 38px solid rgba(251,146,60,0.82);
+      filter: drop-shadow(0 0 5px rgba(251,146,60,0.5));
+    }
+    .ear-inner {
+      position: absolute;
+      bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 24px solid rgba(251,146,60,0.18);
+    }
+    .face { position: absolute; inset: 0; }
+    .eye {
+      position: absolute;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: rgba(251,146,60,0.07);
+      border: 2px solid var(--orange);
+      box-shadow: 0 0 10px var(--orange), 0 0 20px rgba(251,146,60,0.3);
+      animation: eyeGlow 2.2s ease-in-out infinite;
+      top: 30px;
+    }
+    .eye-l { left: 14px; }
+    .eye-r { right: 14px; }
+    @keyframes eyeGlow {
+      0%,100% { box-shadow: 0 0 8px var(--orange), 0 0 14px rgba(251,146,60,0.25); }
+      50%      { box-shadow: 0 0 18px var(--orange), 0 0 36px rgba(251,146,60,0.5); }
+    }
+    .muzzle {
+      position: absolute;
+      bottom: 12px; left: 50%; transform: translateX(-50%);
+      width: 38px; height: 25px;
+      background: rgba(0,16,10,0.9);
+      border: 1px solid rgba(251,146,60,0.4);
+      border-radius: 40% 40% 52% 52%;
+      display: flex; flex-direction: column;
+      align-items: center; padding-top: 4px; gap: 3px;
+    }
+    .nose {
+      width: 5px; height: 3px;
+      background: rgba(251,146,60,0.85);
+      border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+      box-shadow: 0 0 5px rgba(251,146,60,0.5);
+    }
+    .mouth {
+      width: 14px; height: 6px;
+      border-bottom: 1.5px solid rgba(251,146,60,0.55);
+      border-left: 1.5px solid rgba(251,146,60,0.55);
+      border-right: 1.5px solid rgba(251,146,60,0.55);
+      border-radius: 0 0 8px 8px;
+    }
+
+    /* WHISKERS */
+    .whiskers {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .wh {
+      position: absolute;
+      height: 1.5px;
+      border-radius: 1px;
+      background: linear-gradient(90deg, rgba(251,146,60,0.7), transparent);
+      box-shadow: 0 0 4px rgba(251,146,60,0.4);
+      transform-origin: left center;
+    }
+    /* left whiskers */
+    .wh-l1 { width: 34px; top: -5px;  left: -57px; transform-origin: right center; transform: rotate(12deg);  background: linear-gradient(90deg, transparent, rgba(251,146,60,0.7)); }
+    .wh-l2 { width: 38px; top:  3px;  left: -61px; transform-origin: right center; transform: rotate(0deg);   background: linear-gradient(90deg, transparent, rgba(251,146,60,0.7)); }
+    .wh-l3 { width: 30px; top: 11px;  left: -54px; transform-origin: right center; transform: rotate(-12deg); background: linear-gradient(90deg, transparent, rgba(251,146,60,0.7)); }
+    /* right whiskers */
+    .wh-r1 { width: 34px; top: -5px;  left:  23px; transform: rotate(-12deg); }
+    .wh-r2 { width: 38px; top:  3px;  left:  23px; transform: rotate(0deg); }
+    .wh-r3 { width: 30px; top: 11px;  left:  23px; transform: rotate(12deg); }
+
+    /* CPU BODY */
+    .cpu-body {
+      position: absolute;
+      top: 72px; left: 50%; transform: translateX(-50%);
+      width: 136px; height: 94px;
+      background: #010f07;
+      border: 2px solid var(--orange);
+      border-radius: 10px;
+      box-shadow: 0 0 24px rgba(251,146,60,0.3), inset 0 0 28px rgba(251,146,60,0.04);
+      overflow: visible;
+      z-index: 2;
+    }
+    .trace { position: absolute; background: rgba(251,146,60,0.28); border-radius: 1px; }
+    .t1 { top: 18px; left: 12px; width: 26px; height: 1px; }
+    .t2 { top: 18px; left: 38px; width: 1px; height: 20px; }
+    .t3 { top: 38px; left: 38px; width: 54px; height: 1px; }
+    .t4 { top: 60px; left: 12px; width: 34px; height: 1px; }
+    .t5 { top: 38px; right: 14px; width: 1px; height: 22px; }
+    .belly {
+      position: absolute;
+      bottom: 12px; left: 50%; transform: translateX(-50%);
+      display: grid; grid-template-columns: repeat(3, 8px); gap: 6px;
+    }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #1a0a00; border: 1px solid rgba(251,146,60,0.4);
+      animation: dotPulse 2.5s ease-in-out infinite;
+    }
+    .dot:nth-child(1) { animation-delay: 0.00s; }
+    .dot:nth-child(2) { animation-delay: 0.28s; }
+    .dot:nth-child(3) { animation-delay: 0.56s; }
+    .dot:nth-child(4) { animation-delay: 0.84s; }
+    .dot:nth-child(5) { animation-delay: 1.12s; }
+    .dot:nth-child(6) { animation-delay: 1.40s; }
+    @keyframes dotPulse {
+      0%,100% { background: #1a0a00; box-shadow: none; }
+      50%      { background: rgba(251,146,60,0.5); box-shadow: 0 0 8px var(--orange); }
+    }
+    .pins-left, .pins-right {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .pins-left  { left: -9px; }
+    .pins-right { right: -9px; }
+    .pin { width: 8px; height: 2px; background: var(--orange); border-radius: 1px; box-shadow: 0 0 4px var(--orange); }
+
+    /* ARM */
+    .arm {
+      position: absolute;
+      top: 100px; right: 0;
+      width: 26px; height: 14px;
+      background: #010f07;
+      border: 1px solid rgba(251,146,60,0.5);
+      border-radius: 0 6px 6px 0;
+      display: flex; align-items: center; justify-content: flex-end; padding-right: 4px;
+      transform-origin: left center;
+      animation: armWave 4s ease-in-out infinite;
+      z-index: 3;
+    }
+    @keyframes armWave {
+      0%,100% { transform: rotate(0deg); }
+      30%      { transform: rotate(-18deg); }
+      65%      { transform: rotate(12deg); }
+    }
+    .arm-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--orange); box-shadow: 0 0 7px var(--orange);
+    }
+
+    /* LEGS */
+    .legs {
+      position: absolute;
+      bottom: 0; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 20px;
+      z-index: 3;
+    }
+    .leg {
+      width: 22px; height: 28px;
+      background: #010f07;
+      border: 1px solid rgba(251,146,60,0.45);
+      border-radius: 0 0 10px 10px;
+      display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px;
+    }
+    .leg-dot { width: 14px; height: 4px; background: rgba(251,146,60,0.28); border-radius: 3px; }
+
+    /* TAIL */
+    .tail {
+      position: absolute;
+      bottom: 24px; left: -52px;
+      width: 68px; height: 58px;
+      background: linear-gradient(135deg, #0f0700 42%, rgba(251,146,60,0.1) 100%);
+      border: 1px solid rgba(251,146,60,0.45);
+      border-radius: 62% 0 0 44% / 62% 0 0 44%;
+      transform-origin: right bottom;
+      animation: tailWag 2.8s ease-in-out infinite;
+      box-shadow: inset 0 0 14px rgba(251,146,60,0.06), -3px 0 14px rgba(251,146,60,0.12);
+      z-index: 1;
+    }
+    @keyframes tailWag {
+      0%,100% { transform: rotate(-15deg); }
+      50%      { transform: rotate(17deg); }
+    }
+    .tail::after {
+      content: '';
+      position: absolute;
+      top: 8px; left: 7px;
+      width: 32px; height: 36px;
+      background: rgba(251,146,60,0.08);
+      border: 1px solid rgba(251,146,60,0.28);
+      border-radius: 50% 28% 50% 28%;
+    }
+
+    /* SHADOW */
+    .shadow {
+      width: 115px; height: 14px;
+      background: radial-gradient(ellipse, rgba(251,146,60,0.22) 0%, transparent 70%);
+      border-radius: 50%;
+      margin: 0.75rem auto 0;
+      position: relative; z-index: 3;
+      animation: shadowAnim 3.2s ease-in-out infinite;
+    }
+    @keyframes shadowAnim {
+      0%,100% { transform: scaleX(1); opacity: 0.7; }
+      50%      { transform: scaleX(0.75); opacity: 0.28; }
+    }
+
+    /* THAHEEN wave letters */
+    .thaheen {
+      display: flex; gap: 2px;
+      margin-top: 1.25rem; justify-content: center;
+      position: relative; z-index: 3;
+    }
+    .letter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 900;
+      color: var(--orange);
+      text-shadow: 0 0 12px var(--orange), 0 0 30px rgba(251,146,60,0.4);
+      display: inline-block;
+      animation: letterWave 1.4s ease-in-out infinite;
+    }
+    @keyframes letterWave {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-9px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .thaheen-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0,255,140,0.08);
+      border: 1px solid rgba(0,255,140,0.3);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      animation: badgePulse 3s ease-in-out infinite;
+    }
+    .thaheen-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: dotBlink 1.4s ease-in-out infinite;
+    }
+    @keyframes badgePulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,255,140,0.2); }
+      50%      { box-shadow: 0 0 0 8px rgba(0,255,140,0); }
+    }
+    @keyframes dotBlink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.3; }
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .hero-title span.line1 { display: block; color: #fff; }
+    .hero-title span.line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--green), var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 12px rgba(0,255,140,0.4));
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: #94a3b8;
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      pointer-events: all;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.75rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: 2px solid transparent;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0,255,140,0.4);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 35px rgba(0,255,140,0.7);
+      transform: translateY(-2px);
+    }
+    .btn-outline {
+      border-color: var(--teal);
+      color: var(--cyan-dim);
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: rgba(13,148,136,0.15);
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      opacity: 0.5;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .scroll-hint span {
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.1em;
+      color: var(--green);
+    }
+    .scroll-arrow {
+      width: 1px;
+      height: 30px;
+      background: linear-gradient(to bottom, var(--green), transparent);
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ════════════════════════════════════════════════════
+       §2  THAHEEN PLATFORM
+    ═════════════════════════════════════════════════════ */
+    #thaheen-intro {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, var(--bg) 0%, #001810 100%);
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 28px;
+      height: 1px;
+      background: var(--green);
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      color: #fff;
+    }
+
+    .thaheen-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+
+    .thaheen-card {
+      padding: 1.5rem;
+      border-radius: 14px;
+      background: rgba(0,255,140,0.04);
+      border: 1px solid rgba(0,255,140,0.12);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .thaheen-card:hover {
+      border-color: rgba(0,255,140,0.35);
+      box-shadow: 0 0 24px rgba(0,255,140,0.1);
+      transform: translateY(-3px);
+    }
+    .thaheen-card .t-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .thaheen-card h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--cyan-dim);
+      margin-bottom: 0.4rem;
+    }
+    .thaheen-card p {
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .platform-tag {
+      display: inline-block;
+      margin-bottom: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--orange);
+      background: rgba(251,146,60,0.08);
+      border: 1px solid rgba(251,146,60,0.25);
+      border-radius: 6px;
+      padding: 0.25rem 0.65rem;
+    }
+
+    /* Platform lineage diagram */
+    .lineage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2.5rem 0;
+      flex-wrap: wrap;
+    }
+    .lineage-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .lineage-node .ln-box {
+      padding: 0.6rem 1.25rem;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+    .ln-thaheen {
+      background: rgba(251,146,60,0.12);
+      border: 2px solid rgba(251,146,60,0.5);
+      color: var(--orange);
+      box-shadow: 0 0 18px rgba(251,146,60,0.2);
+    }
+    .ln-os {
+      background: rgba(0,255,140,0.08);
+      border: 2px solid rgba(0,255,140,0.45);
+      color: var(--green);
+      box-shadow: 0 0 18px rgba(0,255,140,0.2);
+    }
+    .lineage-arrow {
+      font-size: 1.4rem;
+      color: var(--teal);
+      opacity: 0.7;
+    }
+    .lineage-node span {
+      font-size: 0.65rem;
+      color: #475569;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §3  FEATURES
+    ═════════════════════════════════════════════════════ */
+    #features {
+      padding: 6rem 0;
+      background: var(--bg2);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+
+    .feat-card {
+      padding: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: var(--line-color, var(--green));
+      opacity: 0.7;
+    }
+    .feat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+    .feat-card .feat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.85rem;
+      display: block;
+    }
+    .feat-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .feat-card p {
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.55;
+    }
+    .feat-card .feat-tag {
+      display: inline-block;
+      margin-top: 0.85rem;
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--line-color, var(--green));
+      background: rgba(0,255,140,0.06);
+      border: 1px solid rgba(0,255,140,0.18);
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* Glow accent for each card */
+    .feat-card .card-glow {
+      position: absolute;
+      bottom: -40px; right: -40px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--glow-color, rgba(0,255,140,0.12)) 0%, transparent 70%);
+      pointer-events: none;
+      transition: opacity 0.3s;
+      opacity: 0;
+    }
+    .feat-card:hover .card-glow { opacity: 1; }
+
+    /* Full-width feature */
+    .feat-card.full {
+      grid-column: 1 / -1;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §4  ALGORITHMS SHOWCASE
+    ═════════════════════════════════════════════════════ */
+    #algorithms {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+    }
+
+    .algo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .algo-row {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      background: rgba(7,22,22,0.8);
+      border: 1px solid rgba(13,148,136,0.15);
+      transition: border-color 0.3s, transform 0.25s;
+      cursor: default;
+    }
+    .algo-row:hover {
+      border-color: rgba(45,212,191,0.4);
+      transform: translateX(6px);
+    }
+    .algo-index {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #475569;
+      min-width: 28px;
+    }
+    .algo-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--cyan-dim);
+      min-width: 160px;
+    }
+    .algo-bar-track {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .algo-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      animation: barGrow 1.8s ease-out forwards;
+      width: 0%;
+    }
+    @keyframes barGrow {
+      to { width: var(--w, 80%); }
+    }
+    .algo-desc {
+      font-size: 0.75rem;
+      color: #64748b;
+      min-width: 140px;
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* AI badge */
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.3);
+      color: var(--purple);
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.2rem 0.6rem;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §5  LIVE METRICS / GAUGES DEMO
+    ═════════════════════════════════════════════════════ */
+    #metrics {
+      padding: 6rem 0;
+      background: var(--bg);
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+
+    .metric-card {
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      border-radius: 16px;
+    }
+
+    .gauge-ring {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1rem;
+    }
+    .gauge-ring svg {
+      transform: rotate(-90deg);
+    }
+    .gauge-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.06);
+      stroke-width: 8;
+    }
+    .gauge-fill {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 251.2;
+      stroke-dashoffset: 251.2;
+      animation: gaugeFill 2.2s ease-out forwards;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+    @keyframes gaugeFill {
+      to { stroke-dashoffset: var(--offset, 50); }
+    }
+    .gauge-label {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+    .metric-card h4 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 0.3rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .metric-card p {
+      font-size: 0.72rem;
+      color: #475569;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §6  GANTT PREVIEW
+    ═════════════════════════════════════════════════════ */
+    #gantt-preview {
+      padding: 6rem 0;
+      background: var(--bg2);
+    }
+
+    .gantt-demo {
+      margin-top: 2.5rem;
+      border-radius: 16px;
+      padding: 1.75rem;
+      overflow: hidden;
+    }
+
+    .gantt-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .gantt-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .gantt-title-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #475569;
+      flex: 1;
+    }
+
+    .gantt-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .gantt-pid {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #64748b;
+      min-width: 28px;
+      text-align: right;
+    }
+    .gantt-track {
+      flex: 1;
+      height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .gantt-block {
+      position: absolute;
+      top: 2px;
+      height: 18px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: rgba(0,0,0,0.8);
+      animation: ganttSlide 0.8s ease-out forwards;
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    @keyframes ganttSlide {
+      to { transform: scaleX(1); }
+    }
+
+    .gantt-timeline {
+      display: flex;
+      gap: 0;
+      margin-top: 0.5rem;
+      padding-left: 44px;
+    }
+    .gantt-tick {
+      flex: 1;
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #475569;
+      text-align: center;
+      border-left: 1px solid rgba(255,255,255,0.05);
+      padding-top: 0.25rem;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §7  TECH STACK
+    ═════════════════════════════════════════════════════ */
+    #tech {
+      padding: 6rem 0;
+      background: var(--bg);
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .tech-item {
+      text-align: center;
+      padding: 1.25rem 0.75rem;
+      border-radius: 12px;
+      background: rgba(7,22,22,0.9);
+      border: 1px solid rgba(13,148,136,0.12);
+      transition: border-color 0.3s, transform 0.25s;
+    }
+    .tech-item:hover {
+      border-color: var(--teal);
+      transform: translateY(-3px);
+    }
+    .tech-item .tech-icon {
+      font-size: 1.75rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .tech-item h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--cyan-dim);
+      margin-bottom: 0.25rem;
+    }
+    .tech-item p {
+      font-size: 0.65rem;
+      color: #475569;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §8  GAMIFICATION / HUD
+    ═════════════════════════════════════════════════════ */
+    #gamification {
+      padding: 6rem 0;
+      background: linear-gradient(180deg, var(--bg) 0%, #001810 100%);
+    }
+
+    .hud-demo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+
+    .hud-card {
+      padding: 1.5rem;
+      border-radius: 14px;
+    }
+
+    .xp-bar-wrap {
+      margin-top: 1rem;
+    }
+    .xp-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-bottom: 0.35rem;
+    }
+    .xp-track {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .xp-fill {
+      height: 100%;
+      border-radius: 4px;
+      animation: xpFill 2s ease-out forwards;
+      width: 0;
+    }
+    @keyframes xpFill { to { width: var(--xp, 60%); } }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+    .badge-gold   { background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.35); color: #fbbf24; }
+    .badge-silver { background: rgba(148,163,184,0.1);  border: 1px solid rgba(148,163,184,0.3);  color: #94a3b8; }
+    .badge-green  { background: rgba(0,255,140,0.08);   border: 1px solid rgba(0,255,140,0.25);   color: var(--green); }
+    .badge-purple { background: rgba(167,139,250,0.1);  border: 1px solid rgba(167,139,250,0.3);  color: var(--purple); }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .stat-box {
+      text-align: center;
+      padding: 0.85rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(13,148,136,0.1);
+    }
+    .stat-box .val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--green);
+      text-shadow: 0 0 12px rgba(0,255,140,0.5);
+    }
+    .stat-box .lbl {
+      font-size: 0.65rem;
+      color: #475569;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ════════════════════════════════════════════════════
+       §9  FOOTER / CTA
+    ═════════════════════════════════════════════════════ */
+    #cta {
+      padding: 6rem 2rem;
+      text-align: center;
+      background: var(--bg2);
+      position: relative;
+      overflow: hidden;
+    }
+    #cta::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,255,140,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .cta-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .cta-sub {
+      font-size: 0.9rem;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 2.5rem;
+    }
+
+    footer {
+      padding: 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(13,148,136,0.12);
+    }
+    footer p {
+      font-size: 0.75rem;
+      color: #334155;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    footer span.heart { color: var(--green); }
+
+    /* ════════════════════════════════════════════════════
+       SCROLL REVEAL ANIMATION
+    ═════════════════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* stagger children */
+    .reveal-stagger > * {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal-stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0.05s; }
+    .reveal-stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.15s; }
+    .reveal-stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.25s; }
+    .reveal-stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.35s; }
+    .reveal-stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.45s; }
+    .reveal-stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay:0.55s; }
+    .reveal-stagger.visible > *:nth-child(7) { opacity:1; transform:none; transition-delay:0.65s; }
+    .reveal-stagger.visible > *:nth-child(8) { opacity:1; transform:none; transition-delay:0.75s; }
+
+    /* ════════════════════════════════════════════════════
+       FLOATING PARTICLES BACKGROUND
+    ═════════════════════════════════════════════════════ */
+    .bg-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .bg-p {
+      position: absolute;
+      width: 2px; height: 2px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 4px var(--green);
+      animation: floatPart var(--d, 6s) var(--del, 0s) ease-in-out infinite alternate;
+      opacity: var(--op, 0.4);
+    }
+    @keyframes floatPart {
+      0%   { transform: translateY(0) translateX(0); }
+      100% { transform: translateY(var(--ty, -20px)) translateX(var(--tx, 10px)); }
+    }
+
+    /* ════════════════════════════════════════════════════
+       NAV
+    ═════════════════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0,13,7,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(13,148,136,0.12);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+    .nav-logo .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .nav-logo .logo-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+    .nav-logo .logo-text span { color: var(--green); }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #64748b;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cyan-dim); }
+
+    /* ════════════════════════════════════════════════════
+       ANIMATED TERMINAL LINE
+    ═════════════════════════════════════════════════════ */
+    .terminal-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    .terminal-line .prompt { color: var(--green); }
+    .terminal-line .cmd    { color: #e2e8f0; }
+    .cursor-blink {
+      display: inline-block;
+      width: 8px; height: 1em;
+      background: var(--green);
+      vertical-align: text-bottom;
+      animation: cursorBlink 1s step-end infinite;
+    }
+    @keyframes cursorBlink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0; }
+    }
+
+    /* ════════════════════════════════════════════════════
+       DIVIDER
+    ═════════════════════════════════════════════════════ */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--teal), transparent);
+      opacity: 0.3;
+      margin: 0 2rem;
+    }
+
+    /* ════════════════════════════════════════════════════
+       CONSOLE PREVIEW
+    ═════════════════════════════════════════════════════ */
+    .console-demo {
+      margin-top: 2.5rem;
+      border-radius: 14px;
+      padding: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.7;
+    }
+    .console-demo .c-line { display: block; }
+    .c-prompt { color: var(--green); }
+    .c-output { color: #64748b; padding-left: 1rem; }
+    .c-value  { color: var(--cyan-dim); }
+    .c-warn   { color: var(--orange); }
+    .c-ai     { color: var(--purple); }
+
+    /* ════════════════════════════════════════════════════
+       RESPONSIVE TWEAKS
+    ═════════════════════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .features-grid, .thaheen-grid, .hud-demo { grid-template-columns: 1fr; }
+      .tech-grid   { grid-template-columns: repeat(2, 1fr); }
+      .metrics-row { grid-template-columns: 1fr; }
+      .algo-desc   { display: none; }
+      nav          { padding: 0.75rem 1rem; }
+      .nav-links   { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════════════════ -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <div class="logo-icon"></div>
+    <div class="logo-text">OS<span>-Quest</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#thaheen-intro">Platform</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#algorithms">Algorithms</a></li>
+    <li><a href="#metrics">Metrics</a></li>
+    <li><a href="#gantt-preview">Gantt</a></li>
+    <li><a href="#tech">Stack</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════════════════════════════════════════════
+     §1  HERO
+════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="thaheen-badge">Extended from THAHEEN Platform</div>
+  </div>
+
+  <div class="fox-scene">
+    <div class="scanlines"></div>
+    <div class="grid-bg"></div>
+    <div class="status-bar">FOX-AGENT v2.4.1 &nbsp;|&nbsp; STATUS: ONLINE &nbsp;|&nbsp; <span>_</span></div>
+
+    <div class="fox-float" id="foxFloat">
+      <div class="tail"></div>
+      <div class="cpu-body">
+        <div class="trace t1"></div><div class="trace t2"></div><div class="trace t3"></div><div class="trace t4"></div><div class="trace t5"></div>
+        <div class="belly">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+        <div class="pins-left"><div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div></div>
+        <div class="pins-right"><div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div><div class="pin"></div></div>
+      </div>
+      <div class="arm"><div class="arm-dot"></div></div>
+      <div class="legs">
+        <div class="leg"><div class="leg-dot"></div></div>
+        <div class="leg"><div class="leg-dot"></div></div>
+      </div>
+      <div class="head">
+        <div class="ear ear-l"><div class="ear-inner"></div></div>
+        <div class="ear ear-r"><div class="ear-inner"></div></div>
+        <div class="head-shape"></div>
+        <div class="face">
+          <div class="eye eye-l"></div>
+          <div class="eye eye-r"></div>
+          <div class="muzzle">
+            <div class="nose"></div>
+            <div class="mouth"></div>
+            <div class="whiskers">
+              <div class="wh wh-l1"></div>
+              <div class="wh wh-l2"></div>
+              <div class="wh wh-l3"></div>
+              <div class="wh wh-r1"></div>
+              <div class="wh wh-r2"></div>
+              <div class="wh wh-r3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shadow"></div>
+
+    <div class="thaheen" id="thaheen">
+      <div class="letter" style="animation-delay:0s;">T</div>
+      <div class="letter" style="animation-delay:0.12s;">H</div>
+      <div class="letter" style="animation-delay:0.24s;">A</div>
+      <div class="letter" style="animation-delay:0.36s;">H</div>
+      <div class="letter" style="animation-delay:0.48s;">E</div>
+      <div class="letter" style="animation-delay:0.6s;">E</div>
+      <div class="letter" style="animation-delay:0.72s;">N</div>
+    </div>
+  </div>
+
+  <div class="terminal-line" style="position:relative;z-index:2;">
+    <span class="prompt">$</span>
+    <span class="cmd">./os-quest --mode ai --algo all --gamify</span>
+    <span class="cursor-blink"></span>
+  </div>
+
+  <div class="scroll-hint">
+    <span>SCROLL</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §2  THAHEEN PLATFORM
+════════════════════════════════════════════════════ -->
+<section id="thaheen-intro">
+  <div class="bg-particles" id="particles-thaheen"></div>
+  <div class="section-inner" style="position:relative;z-index:1;">
+
+    <div class="section-label reveal">Origin Story</div>
+    <h2 class="section-title reveal">
+      Extended from <br/>
+      <span class="glow-green">THAHEEN</span> Learning Platform
+    </h2>
+    <p style="color:#64748b;font-size:0.9rem;max-width:540px;" class="reveal">
+      THAHEEN is an intelligent Arabic learning platform. OS-Quest builds on its
+      interactive, gamified educational DNA — bringing those same principles to
+      Operating Systems education.
+    </p>
+
+    <div class="lineage reveal">
+      <div class="lineage-node">
+        <div class="ln-box ln-thaheen">THAHEEN</div>
+        <span>Learning Platform</span>
+      </div>
+      <div class="lineage-arrow">→</div>
+      <div class="lineage-node">
+        <div class="ln-box" style="background:rgba(45,212,191,0.08);border:2px solid rgba(45,212,191,0.35);color:var(--cyan);">
+          Extension Layer
+        </div>
+        <span>RAG + AI Engine</span>
+      </div>
+      <div class="lineage-arrow">→</div>
+      <div class="lineage-node">
+        <div class="ln-box ln-os">OS-Quest</div>
+        <span>CPU Sim + Gamification</span>
+      </div>
+    </div>
+
+    <div class="thaheen-grid reveal-stagger">
+      <div class="thaheen-card">
+        <h4>Interactive Learning</h4>
+        <p>Learn CPU scheduling algorithms through hands-on simulation rather than passive reading.</p>
+      </div>
+      <div class="thaheen-card">
+        <h4>Gamified Progress</h4>
+        <p>Earn XP, unlock badges, and compete in algorithm duels — THAHEEN's engagement model adapted for OS concepts.</p>
+      </div>
+      <div class="thaheen-card">
+        <h4>AI-Powered Explanations</h4>
+        <p>RAG-based knowledge retrieval answers your questions about any scheduling algorithm in real time.</p>
+      </div>
+      <div class="thaheen-card">
+        <h4>Sandbox Experiments</h4>
+        <p>THAHEEN's experiment-first philosophy: build your own process queues and watch the scheduler decide.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §3  FEATURES
+════════════════════════════════════════════════════ -->
+<section id="features">
+  <div class="section-inner">
+
+    <div class="section-label reveal">What's Inside</div>
+    <h2 class="section-title reveal">
+      Platform <span class="glow-cyan">Features</span>
+    </h2>
+
+    <div class="features-grid reveal-stagger">
+
+      <div class="feat-card glass" style="--line-color:var(--green);--glow-color:rgba(0,255,140,0.14);">
+        <div class="card-glow"></div>
+        <h3>CPU Scheduling Engine</h3>
+        <p>Full C-compiled WebAssembly engine running FCFS, SJF (preemptive & non-preemptive), Round Robin, Priority, and AI-driven scheduling — all inside the browser.</p>
+        <span class="feat-tag">WASM · C · Browser-native</span>
+      </div>
+
+      <div class="feat-card glass" style="--line-color:var(--cyan);--glow-color:rgba(45,212,191,0.12);">
+        <div class="card-glow"></div>
+        <h3>Neon Gantt Chart</h3>
+        <p>Real-time animated Gantt visualization. Each process gets a unique neon color lane with time-travel scrubbing — replay any simulation tick by tick.</p>
+        <span class="feat-tag" style="border-color:rgba(45,212,191,0.3);color:var(--cyan);">Real-time · Interactive</span>
+      </div>
+
+      <div class="feat-card glass" style="--line-color:var(--purple);--glow-color:rgba(167,139,250,0.12);">
+        <div class="card-glow"></div>
+        <h3>AI Scheduler + RAG Chat</h3>
+        <p>An AI agent picks the optimal algorithm for your workload. Ask questions in the terminal chat powered by Retrieval-Augmented Generation — get instant algorithm explanations.</p>
+        <span class="feat-tag" style="border-color:rgba(167,139,250,0.3);color:var(--purple);">RAG · LLM-powered</span>
+      </div>
+
+      <div class="feat-card glass" style="--line-color:var(--orange);--glow-color:rgba(251,146,60,0.12);">
+        <div class="card-glow"></div>
+        <h3>Gamification HUD</h3>
+        <p>Earn XP for every simulation run. Collect achievement badges. Challenge the AI in Manual Duel mode — pick your own scheduling order and see if you beat the machine.</p>
+        <span class="feat-tag" style="border-color:rgba(251,146,60,0.3);color:var(--orange);">XP · Badges · Duel Mode</span>
+      </div>
+
+      <div class="feat-card glass" style="--line-color:var(--cyan);--glow-color:rgba(45,212,191,0.1);">
+        <div class="card-glow"></div>
+        <h3>Time-Travel Playback</h3>
+        <p>Scrub through any simulation frame-by-frame. Watch processes transition between Ready → Running → Waiting → Done states with full rewind control at 1×, 2×, 5× speed.</p>
+        <span class="feat-tag" style="border-color:rgba(45,212,191,0.3);color:var(--cyan);">Timeline · Scrubber · Replay</span>
+      </div>
+
+      <div class="feat-card glass" style="--line-color:var(--green);--glow-color:rgba(0,255,140,0.1);">
+        <div class="card-glow"></div>
+        <h3>Performance Gauges</h3>
+        <p>Live CPU utilization, average wait time, turnaround time, and throughput gauges. Compare algorithm efficiency visually with animated ring meters.</p>
+        <span class="feat-tag">Metrics · Analysis · Compare</span>
+      </div>
+
+      <div class="feat-card glass full" style="--line-color:var(--purple);--glow-color:rgba(167,139,250,0.08);">
+        <div class="card-glow"></div>
+        <h3>Virtual Desktop + Algorithm Book</h3>
+        <p>A fully interactive virtual OS desktop experience with draggable windows. Open the Algorithm Book to browse every scheduling algorithm with complexity analysis, pseudocode, and examples. The Algorithm Sandbox lets you step through each algorithm manually — the closest you can get to running an OS kernel in the browser.</p>
+        <span class="feat-tag" style="border-color:rgba(167,139,250,0.3);color:var(--purple);">Virtual OS · Draggable UI · Deep Dives</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §4  ALGORITHMS SHOWCASE
+════════════════════════════════════════════════════ -->
+<section id="algorithms">
+  <div class="section-inner">
+
+    <div class="section-label reveal">Scheduling Algorithms</div>
+    <h2 class="section-title reveal">
+      Every Algorithm,<br/><span class="glow-green">Visualized</span>
+    </h2>
+    <p style="color:#64748b;font-size:0.85rem;max-width:480px;margin-bottom:0;" class="reveal">
+      Pick any algorithm, configure parameters, and watch the scheduler execute in real time.
+      Each algorithm is implemented in native C and compiled to WebAssembly.
+    </p>
+
+    <div class="algo-list reveal-stagger">
+
+      <div class="algo-row">
+        <span class="algo-index">01</span>
+        <span class="algo-name">FCFS</span>
+        <div class="algo-bar-track">
+          <div class="algo-bar-fill" style="--w:72%;background:linear-gradient(90deg,#00ff8c,#2dd4bf);"></div>
+        </div>
+        <span class="algo-desc">First Come First Served</span>
+      </div>
+
+      <div class="algo-row">
+        <span class="algo-index">02</span>
+        <span class="algo-name">SJF</span>
+        <div class="algo-bar-track">
+          <div class="algo-bar-fill" style="--w:88%;background:linear-gradient(90deg,#2dd4bf,#5eead4);"></div>
+        </div>
+        <span class="algo-desc">Shortest Job First</span>
+      </div>
+
+      <div class="algo-row">
+        <span class="algo-index">03</span>
+        <span class="algo-name">SRTF</span>
+        <div class="algo-bar-track">
+          <div class="algo-bar-fill" style="--w:91%;background:linear-gradient(90deg,#5eead4,#a78bfa);"></div>
+        </div>
+        <span class="algo-desc">Shortest Remaining Time</span>
+      </div>
+
+      <div class="algo-row">
+        <span class="algo-index">04</span>
+        <span class="algo-name">Round Robin</span>
+        <div class="algo-bar-track">
+          <div class="algo-bar-fill" style="--w:79%;background:linear-gradient(90deg,#a78bfa,#fb923c);"></div>
+        </div>
+        <span class="algo-desc">Configurable Quantum</span>
+      </div>
+
+      <div class="algo-row">
+        <span class="algo-index">05</span>
+        <span class="algo-name">Priority</span>
+        <div class="algo-bar-track">
+          <div class="algo-bar-fill" style="--w:84%;background:linear-gradient(90deg,#fb923c,#fbbf24);"></div>
+        </div>
+        <span class="algo-desc">Preemptive + Non-preemptive</span>
+      </div>
+
+      <div class="algo-row">
+        <span class="algo-index">06</span>
+        <span class="algo-name" style="color:var(--purple);">AI Optimal</span>
+        <div class="algo-bar-track">
+          <div class="algo-bar-fill" style="--w:97%;background:linear-gradient(90deg,#a78bfa,#00ff8c);"></div>
+        </div>
+        <span class="ai-badge">✦ AI-Driven</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §5  LIVE METRICS
+════════════════════════════════════════════════════ -->
+<section id="metrics">
+  <div class="section-inner">
+
+    <div class="section-label reveal">Performance Analysis</div>
+    <h2 class="section-title reveal">
+      Real-Time <span class="glow-cyan">Metrics</span>
+    </h2>
+
+    <div class="metrics-row reveal-stagger">
+
+      <div class="metric-card glass">
+        <div class="gauge-ring">
+          <svg viewBox="0 0 100 100" width="100" height="100">
+            <circle class="gauge-bg" cx="50" cy="50" r="40"/>
+            <circle class="gauge-fill" cx="50" cy="50" r="40"
+              style="stroke:#00ff8c;--offset:30;"
+              stroke-dashoffset="30"/>
+          </svg>
+          <div class="gauge-label glow-green">87%</div>
+        </div>
+        <h4>CPU Utilization</h4>
+        <p>Maximize CPU usage with optimal scheduling</p>
+      </div>
+
+      <div class="metric-card glass">
+        <div class="gauge-ring">
+          <svg viewBox="0 0 100 100" width="100" height="100">
+            <circle class="gauge-bg" cx="50" cy="50" r="40"/>
+            <circle class="gauge-fill" cx="50" cy="50" r="40"
+              style="stroke:#2dd4bf;--offset:80;"
+              stroke-dashoffset="80"/>
+          </svg>
+          <div class="gauge-label glow-cyan">4.2ms</div>
+        </div>
+        <h4>Avg Wait Time</h4>
+        <p>Minimize average process waiting time</p>
+      </div>
+
+      <div class="metric-card glass">
+        <div class="gauge-ring">
+          <svg viewBox="0 0 100 100" width="100" height="100">
+            <circle class="gauge-bg" cx="50" cy="50" r="40"/>
+            <circle class="gauge-fill" cx="50" cy="50" r="40"
+              style="stroke:#a78bfa;--offset:55;"
+              stroke-dashoffset="55"/>
+          </svg>
+          <div class="gauge-label glow-purple">12</div>
+        </div>
+        <h4>Throughput</h4>
+        <p>Processes completed per time unit</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §6  GANTT CHART PREVIEW
+════════════════════════════════════════════════════ -->
+<section id="gantt-preview">
+  <div class="section-inner">
+
+    <div class="section-label reveal">Visualization</div>
+    <h2 class="section-title reveal">
+      Neon <span class="glow-green">Gantt Chart</span>
+    </h2>
+    <p style="color:#64748b;font-size:0.85rem;max-width:480px;" class="reveal">
+      Every process gets a color-coded timeline lane. The playhead scrubs through time as you replay the simulation in slow motion.
+    </p>
+
+    <div class="gantt-demo glass reveal">
+      <div class="gantt-header">
+        <div class="gantt-dot" style="background:#ff5f57;"></div>
+        <div class="gantt-dot" style="background:#febc2e;margin-left:4px;"></div>
+        <div class="gantt-dot" style="background:#28c840;margin-left:4px;"></div>
+        <span class="gantt-title-text" style="margin-left:0.75rem;">os-quest / gantt_chart.render()</span>
+      </div>
+
+      <!-- Process rows -->
+      <div class="gantt-row">
+        <span class="gantt-pid">P1</span>
+        <div class="gantt-track">
+          <div class="gantt-block" style="left:0%;width:20%;background:#00ff8c;animation-delay:0.2s;">P1</div>
+          <div class="gantt-block" style="left:50%;width:15%;background:#00ff8c88;animation-delay:1.2s;">P1</div>
+        </div>
+      </div>
+      <div class="gantt-row">
+        <span class="gantt-pid">P2</span>
+        <div class="gantt-track">
+          <div class="gantt-block" style="left:20%;width:25%;background:#2dd4bf;animation-delay:0.5s;">P2</div>
+        </div>
+      </div>
+      <div class="gantt-row">
+        <span class="gantt-pid">P3</span>
+        <div class="gantt-track">
+          <div class="gantt-block" style="left:45%;width:18%;background:#a78bfa;animation-delay:0.8s;">P3</div>
+          <div class="gantt-block" style="left:65%;width:20%;background:#a78bfa88;animation-delay:1.4s;">P3</div>
+        </div>
+      </div>
+      <div class="gantt-row">
+        <span class="gantt-pid">P4</span>
+        <div class="gantt-track">
+          <div class="gantt-block" style="left:63%;width:22%;background:#fb923c;animation-delay:1.0s;">P4</div>
+        </div>
+      </div>
+      <div class="gantt-row">
+        <span class="gantt-pid">P5</span>
+        <div class="gantt-track">
+          <div class="gantt-block" style="left:85%;width:15%;background:#fbbf24;animation-delay:1.6s;">P5</div>
+        </div>
+      </div>
+
+      <!-- Timeline ticks -->
+      <div class="gantt-timeline">
+        <div class="gantt-tick">0</div>
+        <div class="gantt-tick">2</div>
+        <div class="gantt-tick">4</div>
+        <div class="gantt-tick">6</div>
+        <div class="gantt-tick">8</div>
+        <div class="gantt-tick">10</div>
+        <div class="gantt-tick">12</div>
+        <div class="gantt-tick">14</div>
+        <div class="gantt-tick">16</div>
+        <div class="gantt-tick">18</div>
+        <div class="gantt-tick">20</div>
+      </div>
+    </div>
+
+    <!-- Console demo -->
+    <div class="console-demo glass reveal" style="margin-top:1.25rem;">
+      <span class="c-line"><span class="c-prompt">›</span> Running Round Robin (quantum=2)…</span>
+      <span class="c-line c-output">Scheduling <span class="c-value">5 processes</span>, total burst = <span class="c-value">20 units</span></span>
+      <span class="c-line c-output">Context switches: <span class="c-warn">8</span> | CPU Util: <span class="c-value">87.5%</span></span>
+      <span class="c-line c-output">Avg Waiting: <span class="c-value">4.2ms</span> | Avg Turnaround: <span class="c-value">8.6ms</span></span>
+      <span class="c-line"><span class="c-prompt">›</span> <span class="c-ai">AI suggests: SRTF would reduce wait by 22%</span> ✦</span>
+      <span class="c-line"><span class="c-prompt">$</span> <span class="cursor-blink"></span></span>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §7  GAMIFICATION
+════════════════════════════════════════════════════ -->
+<section id="gamification">
+  <div class="section-inner">
+
+    <div class="section-label reveal">HUD System</div>
+    <h2 class="section-title reveal">
+      Gamified <span class="glow-green">Learning</span>
+    </h2>
+    <p style="color:#64748b;font-size:0.85rem;max-width:480px;" class="reveal">
+      Inspired by THAHEEN's learner engagement model — every action earns XP. Compete, earn badges, and master OS concepts through play.
+    </p>
+
+    <div class="hud-demo reveal-stagger">
+
+      <div class="hud-card glass">
+        <div class="section-label" style="margin-bottom:0.5rem;">Player Progress</div>
+        <div class="xp-bar-wrap">
+          <div class="xp-label"><span>Level 7 — Scheduler Architect</span><span>2840 / 4000 XP</span></div>
+          <div class="xp-track">
+            <div class="xp-fill" style="--xp:71%;background:linear-gradient(90deg,#00ff8c,#2dd4bf);"></div>
+          </div>
+        </div>
+        <div class="badge-row">
+          <span class="badge badge-gold">Algorithm Master</span>
+          <span class="badge badge-green">Speed Demon</span>
+          <span class="badge badge-purple">✦ AI Slayer</span>
+          <span class="badge badge-silver">Sandbox Pro</span>
+        </div>
+      </div>
+
+      <div class="hud-card glass">
+        <div class="section-label" style="margin-bottom:0.5rem;">Simulation Stats</div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="val">47</div>
+            <div class="lbl">Sims Run</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" style="color:var(--cyan);text-shadow:0 0 12px rgba(45,212,191,0.5);">12</div>
+            <div class="lbl">Duels Won</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" style="color:var(--purple);text-shadow:0 0 12px rgba(167,139,250,0.5);">6</div>
+            <div class="lbl">Algos Unlocked</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" style="color:var(--orange);text-shadow:0 0 12px rgba(251,146,60,0.5);">98%</div>
+            <div class="lbl">Best Util</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §8  TECH STACK
+════════════════════════════════════════════════════ -->
+<section id="tech">
+  <div class="section-inner">
+
+    <div class="section-label reveal">Under the Hood</div>
+    <h2 class="section-title reveal">
+      Tech <span class="glow-cyan">Stack</span>
+    </h2>
+
+    <div class="tech-grid reveal-stagger">
+      <div class="tech-item">
+        <h4>C + WebAssembly</h4>
+        <p>Native scheduler compiled to WASM for browser-speed execution</p>
+      </div>
+      <div class="tech-item">
+        <h4>React + Vite</h4>
+        <p>Dashboard UI with hot-reload dev experience</p>
+      </div>
+      <div class="tech-item">
+        <h4>Tailwind CSS</h4>
+        <p>Utility-first styling with custom neon theme</p>
+      </div>
+      <div class="tech-item">
+        <h4>RAG Engine</h4>
+        <p>Retrieval-augmented AI for in-app algorithm Q&amp;A</p>
+      </div>
+      <div class="tech-item">
+        <h4>CSS Fox Engine</h4>
+        <p>Fully CSS-animated 3D mascot — zero canvas overhead</p>
+      </div>
+      <div class="tech-item">
+        <h4>Emscripten</h4>
+        <p>C→WASM compilation bridge for the scheduler engine</p>
+      </div>
+      <div class="tech-item">
+        <h4>Python Server</h4>
+        <p>Lightweight local dev server for static assets</p>
+      </div>
+      <div class="tech-item">
+        <h4>Canvas API</h4>
+        <p>Custom Gantt chart renderer with neon glow effects</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════
+     §9  CTA / FOOTER
+════════════════════════════════════════════════════ -->
+<section id="cta">
+  <div class="cta-title reveal">
+    <span class="glow-green">Ready</span> to Schedule?
+  </div>
+  <p class="cta-sub reveal">// Boot up the simulator and master every algorithm</p>
+
+  <div class="hero-cta reveal">
+    <a href="public/index.html" class="btn btn-primary">Launch OS-Quest</a>
+    <a href="react_dashboard/index.html" class="btn btn-outline">React Dashboard →</a>
+  </div>
+
+  <div class="terminal-line reveal" style="justify-content:center;margin-top:2rem;">
+    <span class="prompt">thaheen@os-quest:~$</span>
+    <span class="cmd">_</span>
+    <span class="cursor-blink"></span>
+  </div>
+</section>
+
+<footer>
+  <p>
+    Built on the <span style="color:var(--orange);">THAHEEN</span> Platform ·
+    OS-Quest CPU Scheduling Arena ·
+    Made with <span class="heart">♥</span> for OS learners
+  </p>
+</footer>
+
+<!-- Three.js removed — Thaheen fox is CSS-animated -->
+<script>
+(function() { return; /* dead block removed */
+  const W = canvas.offsetWidth  || window.innerWidth;
+  const H = canvas.offsetHeight || window.innerHeight;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 100);
+  camera.position.set(0, 1.2, 6.5);
+
+  /* ── Resize ─────────────────────────────────────── */
+  window.addEventListener('resize', () => {
+    const nw = canvas.offsetWidth, nh = canvas.offsetHeight;
+    renderer.setSize(nw, nh);
+    camera.aspect = nw / nh;
+    camera.updateProjectionMatrix();
+  });
+
+  /* ── Lights ─────────────────────────────────────── */
+  scene.add(new THREE.AmbientLight(0x002211, 1.5));
+  const keyLight = new THREE.PointLight(0x00ff8c, 2.5, 20);
+  keyLight.position.set(2, 4, 4);
+  scene.add(keyLight);
+  const fillLight = new THREE.PointLight(0x2dd4bf, 1.2, 18);
+  fillLight.position.set(-3, 2, 2);
+  scene.add(fillLight);
+  const rimLight = new THREE.PointLight(0xa78bfa, 0.8, 15);
+  rimLight.position.set(0, -2, -4);
+  scene.add(rimLight);
+
+  /* ── Material factory ───────────────────────────── */
+  const mat = (hex, emissive, emissiveI=0.4, roughness=0.35, metalness=0.6) =>
+    new THREE.MeshStandardMaterial({ color: hex, emissive, emissiveIntensity: emissiveI, roughness, metalness });
+
+  const wireMat = (hex) =>
+    new THREE.MeshBasicMaterial({ color: hex, wireframe: true, transparent: true, opacity: 0.18 });
+
+  /* ── Fox geometry ───────────────────────────────── */
+  const fox = new THREE.Group();
+
+  // ─ Body ──────────────────────────────────────────
+  const bodyGeo  = new THREE.CapsuleGeometry(0.55, 0.9, 6, 12);
+  const bodyMesh = new THREE.Mesh(bodyGeo, mat(0x1a0a00, 0x00ff2a, 0.06));
+  bodyMesh.rotation.z = 0.12;
+  bodyMesh.position.set(0, -0.15, 0);
+  fox.add(bodyMesh);
+
+  // Body wireframe overlay
+  const bodyWire = new THREE.Mesh(bodyGeo, wireMat(0x00ff8c));
+  bodyWire.rotation.z = 0.12;
+  bodyWire.position.set(0, -0.15, 0);
+  bodyWire.scale.setScalar(1.01);
+  fox.add(bodyWire);
+
+  // Chest patch
+  const chestGeo  = new THREE.SphereGeometry(0.4, 10, 10);
+  const chestMesh = new THREE.Mesh(chestGeo, mat(0x0d1a15, 0x2dd4bf, 0.05));
+  chestMesh.scale.set(0.8, 0.9, 0.5);
+  chestMesh.position.set(0, -0.05, 0.45);
+  fox.add(chestMesh);
+
+  // ─ Head ──────────────────────────────────────────
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 0.95, 0);
+
+  const headGeo  = new THREE.SphereGeometry(0.52, 14, 14);
+  const headMesh = new THREE.Mesh(headGeo, mat(0x1a0900, 0x00ff2a, 0.05));
+  headGroup.add(headMesh);
+
+  const headWire = new THREE.Mesh(headGeo, wireMat(0x00ff8c));
+  headWire.scale.setScalar(1.02);
+  headGroup.add(headWire);
+
+  // ─ Snout ─────────────────────────────────────────
+  const snoutGeo  = new THREE.BoxGeometry(0.36, 0.24, 0.38);
+  const snoutMesh = new THREE.Mesh(snoutGeo, mat(0x0d1a15, 0x2dd4bf, 0.04));
+  snoutMesh.position.set(0, -0.12, 0.46);
+  headGroup.add(snoutMesh);
+
+  // Nose
+  const noseGeo  = new THREE.SphereGeometry(0.07, 8, 8);
+  const noseMesh = new THREE.Mesh(noseGeo, mat(0x000000, 0x2dd4bf, 0.9));
+  noseMesh.position.set(0, -0.05, 0.66);
+  headGroup.add(noseMesh);
+
+  // ─ Eyes ──────────────────────────────────────────
+  const eyeGeo = new THREE.SphereGeometry(0.085, 10, 10);
+  const eyeMat = mat(0x001a12, 0x00ff8c, 2.5, 0.1, 0.8);
+
+  const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+  eyeL.position.set(-0.2, 0.1, 0.44);
+  headGroup.add(eyeL);
+
+  const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+  eyeR.position.set(0.2, 0.1, 0.44);
+  headGroup.add(eyeR);
+
+  // Eye glow rings
+  const glowRingGeo = new THREE.TorusGeometry(0.1, 0.015, 8, 24);
+  const glowRingMat = mat(0x00ff8c, 0x00ff8c, 3.0);
+  const glowL = new THREE.Mesh(glowRingGeo, glowRingMat);
+  glowL.position.copy(eyeL.position);
+  glowL.rotation.y = Math.PI / 2;
+  headGroup.add(glowL);
+
+  const glowR = new THREE.Mesh(glowRingGeo, glowRingMat.clone());
+  glowR.position.copy(eyeR.position);
+  glowR.rotation.y = Math.PI / 2;
+  headGroup.add(glowR);
+
+  // ─ Ears ──────────────────────────────────────────
+  const earGeo = new THREE.ConeGeometry(0.22, 0.5, 5);
+  const earMat = mat(0x140700, 0x00ff2a, 0.04);
+
+  const earL = new THREE.Mesh(earGeo, earMat);
+  earL.position.set(-0.32, 0.48, 0.05);
+  earL.rotation.z = -0.25;
+  headGroup.add(earL);
+
+  const earR = new THREE.Mesh(earGeo, earMat);
+  earR.position.set(0.32, 0.48, 0.05);
+  earR.rotation.z = 0.25;
+  headGroup.add(earR);
+
+  // Inner ear (neon accent)
+  const innerEarGeo = new THREE.ConeGeometry(0.11, 0.32, 5);
+  const innerEarMat = mat(0x001a10, 0x00ff8c, 1.0);
+
+  const innerEarL = new THREE.Mesh(innerEarGeo, innerEarMat);
+  innerEarL.position.set(-0.32, 0.48, 0.06);
+  innerEarL.rotation.z = -0.25;
+  headGroup.add(innerEarL);
+
+  const innerEarR = new THREE.Mesh(innerEarGeo, innerEarMat.clone());
+  innerEarR.position.set(0.32, 0.48, 0.06);
+  innerEarR.rotation.z = 0.25;
+  headGroup.add(innerEarR);
+
+  // Ear wire overlays
+  [earL, earR].forEach(e => {
+    const ew = new THREE.Mesh(earGeo, wireMat(0x00ff8c));
+    ew.position.copy(e.position);
+    ew.rotation.copy(e.rotation);
+    ew.scale.setScalar(1.02);
+    headGroup.add(ew);
+  });
+
+  fox.add(headGroup);
+
+  // ─ Tail ──────────────────────────────────────────
+  const tailGroup = new THREE.Group();
+  tailGroup.position.set(-0.2, -0.6, -0.5);
+  tailGroup.rotation.z = -0.5;
+
+  const tailSegs = 6;
+  for (let i = 0; i < tailSegs; i++) {
+    const r = 0.32 - i * 0.03;
+    const tailSeg = new THREE.Mesh(
+      new THREE.SphereGeometry(r, 8, 8),
+      mat(i < 4 ? 0x1a0a00 : 0x0d1a15, i < 4 ? 0x00ff2a : 0x2dd4bf, i < 4 ? 0.04 : 0.5)
+    );
+    tailSeg.position.set(
+      -i * 0.22,
+      -i * 0.18,
+      -i * 0.06
+    );
+    tailGroup.add(tailSeg);
+
+    if (i < tailSegs - 1) {
+      const tw = new THREE.Mesh(
+        new THREE.SphereGeometry(r * 1.02, 6, 6),
+        wireMat(i < 4 ? 0x00ff8c : 0x2dd4bf)
+      );
+      tw.position.copy(tailSeg.position);
+      tailGroup.add(tw);
+    }
+  }
+  fox.add(tailGroup);
+
+  // ─ Legs ──────────────────────────────────────────
+  const legGeo = new THREE.CapsuleGeometry(0.1, 0.5, 4, 8);
+  const legMat = mat(0x140700, 0x00ff2a, 0.03);
+  const legPositions = [
+    [-0.3, -0.75,  0.28],
+    [ 0.3, -0.75,  0.28],
+    [-0.28, -0.75, -0.22],
+    [ 0.28, -0.75, -0.22],
+  ];
+  legPositions.forEach(pos => {
+    const leg = new THREE.Mesh(legGeo, legMat);
+    leg.position.set(...pos);
+    fox.add(leg);
+  });
+
+  // ─ Circuit decoration on body ────────────────────
+  const circuitMat = mat(0x00ff8c, 0x00ff8c, 3.0, 0.2, 0.9);
+  for (let i = 0; i < 6; i++) {
+    const dotGeo  = new THREE.SphereGeometry(0.025, 6, 6);
+    const dot = new THREE.Mesh(dotGeo, circuitMat);
+    const a = (i / 6) * Math.PI * 2;
+    dot.position.set(Math.cos(a) * 0.45, Math.sin(a) * 0.38 - 0.15, 0.5);
+    fox.add(dot);
+  }
+
+  // ─ Holographic ring around fox ───────────────────
+  const ringGeo  = new THREE.TorusGeometry(1.05, 0.018, 8, 80);
+  const ringMat  = mat(0x00ff8c, 0x00ff8c, 2.0, 0.1, 1.0);
+  const ring1    = new THREE.Mesh(ringGeo, ringMat);
+  ring1.rotation.x = Math.PI / 2;
+  ring1.position.y = -0.55;
+  fox.add(ring1);
+
+  const ring2 = new THREE.Mesh(
+    new THREE.TorusGeometry(0.88, 0.01, 8, 64),
+    mat(0x2dd4bf, 0x2dd4bf, 2.0, 0.1, 1.0)
+  );
+  ring2.rotation.x = Math.PI / 2;
+  ring2.rotation.z = Math.PI / 4;
+  ring2.position.y = -0.55;
+  fox.add(ring2);
+
+  fox.position.set(0, -0.3, 0);
+  scene.add(fox);
+
+  /* ── Floating particles ─────────────────────────── */
+  const ptsCount = 280;
+  const positions = new Float32Array(ptsCount * 3);
+  for (let i = 0; i < ptsCount; i++) {
+    positions[i * 3]     = (Math.random() - 0.5) * 14;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
+  }
+  const ptsGeo = new THREE.BufferGeometry();
+  ptsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const ptsMat = new THREE.PointsMaterial({ color: 0x00ff8c, size: 0.04, transparent: true, opacity: 0.55 });
+  scene.add(new THREE.Points(ptsGeo, ptsMat));
+
+  /* Second ring of cyan particles */
+  const pos2 = new Float32Array(160 * 3);
+  for (let i = 0; i < 160; i++) {
+    pos2[i * 3]     = (Math.random() - 0.5) * 12;
+    pos2[i * 3 + 1] = (Math.random() - 0.5) * 8;
+    pos2[i * 3 + 2] = (Math.random() - 0.5) * 6;
+  }
+  const ptsGeo2 = new THREE.BufferGeometry();
+  ptsGeo2.setAttribute('position', new THREE.BufferAttribute(pos2, 3));
+  scene.add(new THREE.Points(ptsGeo2, new THREE.PointsMaterial({
+    color: 0x2dd4bf, size: 0.03, transparent: true, opacity: 0.35
+  })));
+
+  /* ── Mouse parallax ─────────────────────────────── */
+  let mx = 0, my = 0;
+  window.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth  - 0.5) * 2;
+    my = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  /* ── Animation loop ─────────────────────────────── */
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.012;
+
+    // Fox idle sway
+    fox.rotation.y = Math.sin(t * 0.6) * 0.35 + mx * 0.18;
+    fox.position.y = Math.sin(t * 0.9) * 0.08 - 0.3;
+    fox.rotation.x = my * 0.08;
+
+    // Head look-around
+    headGroup.rotation.y = Math.sin(t * 0.4) * 0.15 + mx * 0.12;
+    headGroup.rotation.x = Math.sin(t * 0.5) * 0.06 + my * 0.06;
+
+    // Holographic rings spin
+    ring1.rotation.z += 0.008;
+    ring2.rotation.z -= 0.012;
+
+    // Eye pulse
+    eyeMat.emissiveIntensity = 2.0 + Math.sin(t * 2) * 0.5;
+
+    // Tail wag
+    tailGroup.rotation.z = -0.5 + Math.sin(t * 1.8) * 0.4;
+    tailGroup.rotation.x = Math.sin(t * 1.2) * 0.15;
+
+    renderer.render(scene, camera);
+  }
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════
+     SCROLL REVEAL + PARTICLES
+════════════════════════════════════════════════════ -->
+<script>
+/* ── Intersection Observer for reveal ──────────────── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => observer.observe(el));
+
+/* ── Background particle seeds ─────────────────────── */
+function seedParticles(container, count) {
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'bg-p';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --d:${4+Math.random()*8}s;
+      --del:${Math.random()*6}s;
+      --ty:${-10-Math.random()*30}px;
+      --tx:${(Math.random()-0.5)*20}px;
+      --op:${0.15+Math.random()*0.3};
+    `;
+    container.appendChild(p);
+  }
+}
+const pc = document.getElementById('particles-thaheen');
+if (pc) seedParticles(pc, 24);
+</script>
+
+</body>
+</html>
